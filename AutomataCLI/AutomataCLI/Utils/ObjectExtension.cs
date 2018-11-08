@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace AutomataCLI.Utils {
     public static class ObjectExtension {
+        // UNTESTED
         public static Object ConvertFromDictionary(this Object thisObject, IDictionary<Object, Object> dynamicObj) {
             foreach (var property in thisObject.GetType().GetProperties()) {
                 if (dynamicObj.TryGetValue(property.Name, out Object newValue)) {
