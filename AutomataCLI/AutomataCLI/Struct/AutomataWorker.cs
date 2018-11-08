@@ -17,7 +17,7 @@ namespace AutomataCLI.Struct {
             this.InputSymbols = inputSymbols;
         }
         
-        async private Task<Boolean> Work(){
+        async public Task<Boolean> Work(){
             
             var possibleTransitions = new List<Transition>();
             var remainingSymbols    = new List<Char>(InputSymbols);
