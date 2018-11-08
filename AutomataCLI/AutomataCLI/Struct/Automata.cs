@@ -7,15 +7,29 @@ using System.Threading.Tasks;
 namespace AutomataCLI.Struct {
     public class Automata {
         public AutomataType Type { get; protected set; }
+        public List<Char> Symbols { get; protected set; }
         public List<State> States { get; protected set; }
         public List<Transition> Transitions { get; protected set; }
         public State InitialState { get; protected set; }
         public List<State> FinalStates { get; protected set; }
 
         public Automata() {
+            Symbols     = new List<Char>();
             States      = new List<State>();
             Transitions = new List<Transition>();
             FinalStates = new List<State>();
+        }
+
+        public void AddSymbol(Char symbol) {
+            this.Symbols.Add(symbol);
+        }
+
+        public void RemoveSymbol(Char symbol) {
+            this.Symbols.Remove(symbol);
+        }
+
+        public void SetSymbols(ICollection<Char> symbolCollection) {
+            this.Symbols = new List<Char>(symbolCollection);
         }
 
         public void AddState(State state) {
@@ -29,7 +43,7 @@ namespace AutomataCLI.Struct {
         }
 
         public void SetStates(ICollection<State> stateCollection) {
-            States = new List<State>(stateCollection);
+            this.States = new List<State>(stateCollection);
             this.RefreshFinalStates();
         }
 
