@@ -8,8 +8,12 @@ namespace AutomataCLI.Struct {
 
         public Transition(State from, Char input, State to) {
             this.From = from;
+
             this.Input = input;
-            this.To = to;
+            this.To    = to;
         }
+
+        public override String ToString()
+            => $"({From}, {Input}, {To})";
     }
 }
