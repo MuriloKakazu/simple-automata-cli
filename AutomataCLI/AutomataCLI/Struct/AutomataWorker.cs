@@ -16,7 +16,7 @@ namespace AutomataCLI.Struct {
             this.CurrentState = currentState;
             this.InputSymbols = inputSymbols;
         }
-
+        
         async private Task<Boolean> Work(){
             
             var possibleTransitions = new List<Transition>();
@@ -50,7 +50,6 @@ namespace AutomataCLI.Struct {
                     default:
                         Boolean[] results = await summonWorkers(possibleTransitions, remainingSymbols);
                         return results.Any(x => x);
-                        break;
                 }
                 
                 if (transitionsQuantity >= 1) {
