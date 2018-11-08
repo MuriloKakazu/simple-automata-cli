@@ -7,9 +7,9 @@ namespace AutomataCLI.Struct {
         public State To { get; protected set; }
 
         public Transition(State from, String input, State to) {
-            this.From = from;
+            this.From  = from;
             this.Input = input;
-            this.To = to;
+            this.To    = to;
         }
 
         public override String ToString()
