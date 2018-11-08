@@ -13,5 +13,8 @@ namespace AutomataCLI.Struct {
             this.Name = name;
             this.IsFinal = isFinal;
         }
+
+        public override String ToString()
+            => $"{Name} ({(IsFinal ? "Final" : "Not Final")})";
     }
 }

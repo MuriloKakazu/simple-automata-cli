@@ -11,5 +11,8 @@ namespace AutomataCLI.Struct {
             this.Input = input;
             this.To = to;
         }
+
+        public override String ToString()
+            => $"({From}, {Input}, {To})";
     }
 }
