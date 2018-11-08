@@ -49,6 +49,7 @@
     <Compile Include="Struct\AutomataType.cs" />
     <Compile Include="Struct\State.cs" />
     <Compile Include="Struct\Transition.cs" />
+    <Compile Include="Struct\AutomataReader.cs" />
     <Compile Include="Utils\ObjectExtension.cs" />
   </ItemGroup>
   <ItemGroup>
