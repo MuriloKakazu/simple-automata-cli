@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AutomataCLI.Struct {
-    internal class Automata {
+    public class Automata {
         public AutomataType Type { get; protected set; }
         public List<Char> Symbols { get; protected set; }
         public List<State> States { get; protected set; }

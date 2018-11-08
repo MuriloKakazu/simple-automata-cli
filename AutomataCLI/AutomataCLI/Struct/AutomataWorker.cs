@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AutomataCLI.Struct {
     public class AutomataWorker {
@@ -16,7 +17,7 @@ namespace AutomataCLI.Struct {
             this.InputSymbols = inputSymbols;
         }
 
-        private Boolean Work(){
+        async private Task<Boolean> Work(){
             
             var possibleTransitions = new List<Transition>();
             var remainingSymbols    = new List<Char>(InputSymbols);
@@ -34,30 +35,38 @@ namespace AutomataCLI.Struct {
 
                 var transitionsQuantity = possibleTransitions.Count; 
 
-                if(transitionsQuantity == 0) {
-                    return false;
-                }
-                
-                this.CurrentState = possibleTransitions[0].To;
-                this.LastState    = possibleTransitions[0].From;
-                
-                if(possibleTransitions[0].Input != null){
-                    remainingSymbols.RemoveAt(i);
-                }
+                switch (transitionsQuantity) {
+                    case 0:
+                        return false;
+                    case 1:
+                        this.CurrentState = possibleTransitions[0].To;
+                        this.LastState = possibleTransitions[0].From;
 
-                if(transitionsQuantity >= 1){
-                    summonWorkers(possibleTransitions.GetRange(1, transitionsQuantity - 1), remainingSymbols);
+                        if (possibleTransitions[0].Input != null)
+                        {
+                            remainingSymbols.RemoveAt(i);
+                        }
+                        break;
+                    default:
+                        Boolean[] results = await summonWorkers(possibleTransitions, remainingSymbols);
+                        return results.Any(x => x);
+                        break;
+                }
+                
+                if (transitionsQuantity >= 1) {
+                    
                 }
 
             }
             return true;
         }
-        public void summonWorkers(List<Transition> possibleTransitions, List<Char> remainingSymbols) {
+        public Task<Boolean[]> summonWorkers(List<Transition> possibleTransitions, List<Char> remainingSymbols) {
         
             foreach(Transition transition in possibleTransitions) {
                 var newWorker = new AutomataWorker(this.Automata, transition.To, remainingSymbols);
-                Boolean result =  newWorker.Work();
             }
+            
+            return Task.WhenAll(possibleTransitions.Select(x => new AutomataWorker(this.Automata, x.To, remainingSymbols).Work()));
         }
     }
 }
