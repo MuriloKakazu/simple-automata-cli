@@ -21,35 +21,34 @@ namespace AutomataCLI.Struct {
             var possibleTransitions = new List<Transition>();
             var remainingSymbols    = new List<Char>(InputSymbols);
 
-            for(int i = 0; i < InputSymbols.Count; i++){
-                {    
-                    var currentSymbol = InputSymbols[i]; 
-                    possibleTransitions = this.Automata.Transitions.Where(
-                        x => (
-                            x.From  == this.CurrentState && (
-                                x.Input == currentSymbol ||
-                                x.Input == null
-                            )
+            for(int i = 0; i < InputSymbols.Count; i++){   
+                var currentSymbol = InputSymbols[i]; 
+                possibleTransitions = this.Automata.Transitions.Where(
+                    x => (
+                        x.From  == this.CurrentState && (
+                            x.Input == currentSymbol ||
+                            x.Input == null
                         )
-                    ).ToList();
+                    )
+                ).ToList();
 
-                    var transitionsQuantity = possibleTransitions.Count; 
+                var transitionsQuantity = possibleTransitions.Count; 
 
-                    if(transitionsQuantity == 0) {
-                        return false;
-                    }
-                    
-                    this.CurrentState = possibleTransitions[0].To;
-                    this.LastState    = possibleTransitions[0].From;
-                    
-                    if(possibleTransitions[0].Input != null){
-                        remainingSymbols.RemoveAt(i);
-                    }
-
-                    if(transitionsQuantity >= 1){
-                        summonWorkers(possibleTransitions.GetRange(1, transitionsQuantity - 1), remainingSymbols);
-                    }
+                if(transitionsQuantity == 0) {
+                    return false;
                 }
+                
+                this.CurrentState = possibleTransitions[0].To;
+                this.LastState    = possibleTransitions[0].From;
+                
+                if(possibleTransitions[0].Input != null){
+                    remainingSymbols.RemoveAt(i);
+                }
+
+                if(transitionsQuantity >= 1){
+                    summonWorkers(possibleTransitions.GetRange(1, transitionsQuantity - 1), remainingSymbols);
+                }
+
             }
             return true;
         }
