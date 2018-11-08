@@ -33,9 +33,9 @@ namespace AutomataCLI.Struct {
                     )
                 ).ToList();
 
-                int TransitionsQuantity = possibleTransitions.Count; 
+                var transitionsQuantity = possibleTransitions.Count; 
 
-                if(TransitionsQuantity == 0) {
+                if(transitionsQuantity == 0) {
                     return false;
                 }
 
@@ -46,8 +46,8 @@ namespace AutomataCLI.Struct {
                     remainingSymbols.RemoveAt(i);
                 }
 
-                if(TransitionsQuantity >= 1){
-                    summonWorkers(possibleTransitions.GetRange(1, TransitionsQuantity - 1), remainingSymbols);
+                if(transitionsQuantity >= 1){
+                    summonWorkers(possibleTransitions.GetRange(1, transitionsQuantity - 1), remainingSymbols);
                 }
             }
             return true;
