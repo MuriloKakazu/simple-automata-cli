@@ -26,8 +26,10 @@ namespace AutomataCLI.Struct {
                 var currentSymbol = InputSymbols[i]; 
                 possibleTransitions = this.Automata.Transitions.Where(
                     x => (
-                        x.Input == currentSymbol &&
-                        x.From  == this.CurrentState
+                        x.From  == this.CurrentState && (
+                            x.Input == currentSymbol ||
+                            x.Input == null
+                        )
                     )
                 ).ToList();
 
@@ -37,9 +39,12 @@ namespace AutomataCLI.Struct {
                     return false;
                 }
 
-                remainingSymbols.RemoveAt(i);
                 this.CurrentState = possibleTransitions[0].To;
                 this.LastState    = possibleTransitions[0].From;
+                
+                if(possibleTransitions[0].Input != null){
+                    remainingSymbols.RemoveAt(i);
+                }
 
                 if(TransitionsQuantity >= 1){
                     summonWorkers(possibleTransitions.GetRange(1, TransitionsQuantity - 1), remainingSymbols);
