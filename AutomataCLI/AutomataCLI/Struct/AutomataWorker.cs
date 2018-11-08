@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AutomataCLI.Struct {
     public class AutomataWorker {
@@ -16,43 +17,56 @@ namespace AutomataCLI.Struct {
             this.InputSymbols = inputSymbols;
         }
 
-        private Boolean Work(){
+        async private Task<Boolean> Work(){
             
             var possibleTransitions = new List<Transition>();
             var remainingSymbols    = new List<Char>(InputSymbols);
 
-            for(int i = 0; i < InputSymbols.Count; i++){
-
+            for(int i = 0; i < InputSymbols.Count; i++){   
                 var currentSymbol = InputSymbols[i]; 
                 possibleTransitions = this.Automata.Transitions.Where(
                     x => (
-                        x.Input == currentSymbol &&
-                        x.From  == this.CurrentState
+                        x.From  == this.CurrentState && (
+                            x.Input == currentSymbol ||
+                            x.Input == null
+                        )
                     )
                 ).ToList();
 
-                int TransitionsQuantity = possibleTransitions.Count; 
+                var transitionsQuantity = possibleTransitions.Count; 
 
-                if(TransitionsQuantity == 0) {
-                    return false;
+                switch (transitionsQuantity) {
+                    case 0:
+                        return false;
+                    case 1:
+                        this.CurrentState = possibleTransitions[0].To;
+                        this.LastState = possibleTransitions[0].From;
+
+                        if (possibleTransitions[0].Input != null)
+                        {
+                            remainingSymbols.RemoveAt(i);
+                        }
+                        break;
+                    default:
+                        Boolean[] results = await summonWorkers(possibleTransitions, remainingSymbols);
+                        return results.Any(x => x);
+                        break;
+                }
+                
+                if (transitionsQuantity >= 1) {
+                    
                 }
 
-                remainingSymbols.RemoveAt(i);
-                this.CurrentState = possibleTransitions[0].To;
-                this.LastState    = possibleTransitions[0].From;
-
-                if(TransitionsQuantity >= 1){
-                    summonWorkers(possibleTransitions.GetRange(1, TransitionsQuantity - 1), remainingSymbols);
-                }
             }
             return true;
         }
-        public void summonWorkers(List<Transition> possibleTransitions, List<Char> remainingSymbols) {
+        public Task<Boolean[]> summonWorkers(List<Transition> possibleTransitions, List<Char> remainingSymbols) {
         
             foreach(Transition transition in possibleTransitions) {
                 var newWorker = new AutomataWorker(this.Automata, transition.To, remainingSymbols);
-                Boolean result =  newWorker.Work();
             }
+            
+            return Task.WhenAll(possibleTransitions.Select(x => new AutomataWorker(this.Automata, x.To, remainingSymbols).Work()));
         }
     }
 }
