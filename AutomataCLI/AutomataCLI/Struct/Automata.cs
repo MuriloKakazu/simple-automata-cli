@@ -14,14 +14,26 @@ namespace AutomataCLI.Struct {
 
         public void AddState(State state) {
             this.States.Add(state);
+            this.RefreshFinalStates();
         }
 
         public void RemoveState(State state) {
             this.States.Remove(state);
+            this.RefreshFinalStates();
+        }
+
+        public void SetStates(ICollection<State> stateCollection) {
+            States = new List<State>(stateCollection);
         }
 
         public void SetInitialState(State state) {
+            this.InitialState = state;
+        }
 
+        private void RefreshFinalStates() {
+            if (States != null) {
+                this.FinalStates = States.Where(x => x.IsFinal);
+            }
         }
 
         public void ClearStates() {
