@@ -50,6 +50,7 @@
     <Compile Include="Struct\State.cs" />
     <Compile Include="Struct\Transition.cs" />
     <Compile Include="Struct\AutomataReader.cs" />
+    <Compile Include="Struct\AutomataWorker.cs" />
     <Compile Include="Utils\ObjectExtension.cs" />
   </ItemGroup>
   <ItemGroup>

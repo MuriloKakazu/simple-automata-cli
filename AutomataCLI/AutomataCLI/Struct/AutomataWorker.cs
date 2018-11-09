@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AutomataCLI.Struct {
@@ -27,7 +28,7 @@ namespace AutomataCLI.Struct {
                 possibleTransitions = this.Automata.Transitions.Where(
                     x => (
                         x.From  == this.CurrentState && (
-                            x.Input == currentSymbol ||
+                            x.Input == currentSymbol.ToString() ||
                             x.Input == null
                         )
                     )
@@ -42,22 +43,24 @@ namespace AutomataCLI.Struct {
                         this.CurrentState = possibleTransitions[0].To;
                         this.LastState = possibleTransitions[0].From;
 
-                        if (possibleTransitions[0].Input != null)
-                        {
-                            remainingSymbols.RemoveAt(i);
-                        }
+                        /* if (possibleTransitions[0].Input != null)
+                        { */
+                            remainingSymbols.RemoveAt(0);
+                        // }
                         break;
                     default:
-                        Boolean[] results = await summonWorkers(possibleTransitions, remainingSymbols);
-                        return results.Any(x => x);
-                }
-                
-                if (transitionsQuantity >= 1) {
-                    
-                }
+                        remainingSymbols.RemoveAt(0);
 
+                        var cts = new CancellationTokenSource();
+                        Boolean[] results = await summonWorkers(possibleTransitions, remainingSymbols);
+                        if(results.Any(x => x)){
+                            cts.Cancel();
+                            return true;
+                        }
+                        return false;
+                }
             }
-            return true;
+            return this.Automata.FinalStates.Contains(this.CurrentState);
         }
         public Task<Boolean[]> summonWorkers(List<Transition> possibleTransitions, List<Char> remainingSymbols) {
         
