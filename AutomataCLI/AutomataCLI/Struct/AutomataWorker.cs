@@ -43,18 +43,19 @@ namespace AutomataCLI.Struct {
                         this.CurrentState = possibleTransitions[0].To;
                         this.LastState = possibleTransitions[0].From;
 
-                        /* if (possibleTransitions[0].Input != null)
-                        { */
+                        if (possibleTransitions[0].Input != null) { 
                             remainingSymbols.RemoveAt(0);
-                        // }
+                        }
                         break;
                     default:
-                        remainingSymbols.RemoveAt(0);
+                        if (possibleTransitions[0].Input != null) {
+                            remainingSymbols.RemoveAt(0);
+                        }
 
-                        // var cts = new CancellationTokenSource();
+                        var cts = new CancellationTokenSource();
                         Boolean[] results = await summonWorkers(possibleTransitions, remainingSymbols);
                         if(results.Any(x => x)){
-                            // cts.Cancel();
+                            cts.Cancel();
                             return true;
                         }
                         return false;

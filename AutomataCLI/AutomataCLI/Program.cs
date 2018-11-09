@@ -15,7 +15,7 @@ namespace AutomataCLI {
             Automata automata = new Automata();
             
 
-            String input = "121";
+            String input = "31312";
 
             State state0 = new State("Q0", false),
                   state1 = new State("Q1", false),
@@ -31,31 +31,33 @@ namespace AutomataCLI {
                 state4
             };
 
-            automata.InitialState = state0;
+            automata.InitialState = state1;
 
             automata.Transitions = new List<Transition>(){
-                // new Transition(state0, "1", state0),
-                // new Transition(state0, "2", state0),
-                // new Transition(state0, "3", state0),
+                new Transition(state0, "1", state0),
+                new Transition(state0, "2", state0),
+                new Transition(state0, "3", state0),
                 new Transition(state0, "1", state1),
                 new Transition(state0, "2", state3),
                 new Transition(state0, "3", state4),
 
-                // new Transition(state1, "1", state1),
+                new Transition(state1, "1", state1),
                 new Transition(state1, "2", state1),
-                // new Transition(state1, "3", state1),
+                new Transition(state1, "3", state1),
                 new Transition(state1, "1", state2),
 
-                // new Transition(state3, "1", state3),
-                // new Transition(state3, "2", state3),
-                // new Transition(state3, "3", state3),
+                new Transition(state3, "1", state3),
+                new Transition(state3, "2", state3),
+                new Transition(state3, "3", state3),
                 new Transition(state3, "2", state2),
 
-                // new Transition(state4, "1", state4),
-                // new Transition(state4, "2", state4),
-                // new Transition(state4, "3", state4),
+                new Transition(state4, "1", state4),
+                new Transition(state4, "2", state4),
+                new Transition(state4, "3", state4),
                 new Transition(state4, "3", state2),
             };
+
+            automata.RefreshFinalStates();
 
             Console.WriteLine(new AutomataReader(automata).Matches(input));
             watch.Stop();

@@ -19,14 +19,16 @@ namespace AutomataCLI.Struct {
             
             Transition initialTransition = Automata.Transitions.Find(
                 x => (
-                    x.From  == this.Automata.InitialState &&
-                    x.Input == input[0].ToString()
+                    x.From  == this.Automata.InitialState && (
+                        x.Input == input[0].ToString() ||
+                        x.Input == null
+                    )
                 )
             );
             if(initialTransition == null){
                 return false;
             }
-            
+
             State firstWorkerState = initialTransition.From;
              
             try{

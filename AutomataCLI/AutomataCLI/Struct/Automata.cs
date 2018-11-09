@@ -51,7 +51,7 @@ namespace AutomataCLI.Struct {
             this.InitialState = state;
         }
 
-        private void RefreshFinalStates() {
+        public void RefreshFinalStates() {
             if (States != null) {
                 this.FinalStates = States.Where(
                     x => x.IsFinal
