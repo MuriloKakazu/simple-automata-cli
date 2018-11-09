@@ -23,7 +23,10 @@ namespace AutomataCLI.Struct {
                     x.Input == input[0].ToString()
                 )
             );
-
+            if(initialTransition == null){
+                return false;
+            }
+            
             State firstWorkerState = initialTransition.From;
              
             try{

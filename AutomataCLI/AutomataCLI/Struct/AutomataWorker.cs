@@ -51,10 +51,10 @@ namespace AutomataCLI.Struct {
                     default:
                         remainingSymbols.RemoveAt(0);
 
-                        var cts = new CancellationTokenSource();
+                        // var cts = new CancellationTokenSource();
                         Boolean[] results = await summonWorkers(possibleTransitions, remainingSymbols);
                         if(results.Any(x => x)){
-                            cts.Cancel();
+                            // cts.Cancel();
                             return true;
                         }
                         return false;
@@ -63,10 +63,6 @@ namespace AutomataCLI.Struct {
             return this.Automata.FinalStates.Contains(this.CurrentState);
         }
         public Task<Boolean[]> summonWorkers(List<Transition> possibleTransitions, List<Char> remainingSymbols) {
-        
-            foreach(Transition transition in possibleTransitions) {
-                var newWorker = new AutomataWorker(this.Automata, transition.To, remainingSymbols);
-            }
             
             return Task.WhenAll(possibleTransitions.Select(x => new AutomataWorker(this.Automata, x.To, remainingSymbols).Work()));
         }

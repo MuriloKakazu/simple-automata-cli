@@ -13,30 +13,48 @@ namespace AutomataCLI {
             watch.Start();
 
             Automata automata = new Automata();
+            
 
-            String input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+            String input = "121";
 
-            State state1 = new State("Q0", false),
-                  state2 = new State("Q1", false),
+            State state0 = new State("Q0", false),
+                  state1 = new State("Q1", false),
+                  state2 = new State("Q2", true),
                   state3 = new State("Q3", false),
-                  state4 = new State("Q4", true );
+                  state4 = new State("Q4", false);
 
             automata.States = new List<State>(){
+                state0,
                 state1,
                 state2,
                 state3,
                 state4
             };
 
-            automata.InitialState = state1;
+            automata.InitialState = state0;
 
             automata.Transitions = new List<Transition>(){
-                new Transition(state1, "a", state2),
-                new Transition(state2, "a", state1),
-                new Transition(state2, "a", state3),
-                new Transition(state2, "b", state3),
-                new Transition(state3, "b", state3),
-                new Transition(state3, "b", state4)
+                // new Transition(state0, "1", state0),
+                // new Transition(state0, "2", state0),
+                // new Transition(state0, "3", state0),
+                new Transition(state0, "1", state1),
+                new Transition(state0, "2", state3),
+                new Transition(state0, "3", state4),
+
+                // new Transition(state1, "1", state1),
+                new Transition(state1, "2", state1),
+                // new Transition(state1, "3", state1),
+                new Transition(state1, "1", state2),
+
+                // new Transition(state3, "1", state3),
+                // new Transition(state3, "2", state3),
+                // new Transition(state3, "3", state3),
+                new Transition(state3, "2", state2),
+
+                // new Transition(state4, "1", state4),
+                // new Transition(state4, "2", state4),
+                // new Transition(state4, "3", state4),
+                new Transition(state4, "3", state2),
             };
 
             Console.WriteLine(new AutomataReader(automata).Matches(input));
