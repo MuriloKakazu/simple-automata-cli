@@ -13,9 +13,8 @@ namespace AutomataCLI {
             watch.Start();
 
             Automata automata = new Automata();
-            
 
-            String input = "31312";
+            String input = "123";
 
             State state0 = new State("Q0", false),
                   state1 = new State("Q1", false),
