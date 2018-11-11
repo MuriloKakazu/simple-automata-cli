@@ -8,11 +8,11 @@ namespace AutomataCLI.Struct {
     public class Automata {
         public class AutomataException : Exception {
             private static String MESSAGE_BASE;
-            public static String  MESSAGE_DUPLICATE_STATE;
-            public static String  MESSAGE_DUPLICATE_TRANSITION;
-            public static String  MESSAGE_STATE_NOT_FOUND;
-            public static String  MESSAGE_SYMBOL_NOT_FOUND;
-            public static String  MESSAGE_TRANSITION_NOT_FOUND;
+            public static  String MESSAGE_DUPLICATE_STATE;
+            public static  String MESSAGE_DUPLICATE_TRANSITION;
+            public static  String MESSAGE_STATE_NOT_FOUND;
+            public static  String MESSAGE_SYMBOL_NOT_FOUND;
+            public static  String MESSAGE_TRANSITION_NOT_FOUND;
 
             // static ctor
             static AutomataException() {
@@ -25,54 +25,67 @@ namespace AutomataCLI.Struct {
             }
 
             // ctor
-            public AutomataException(String reason, String supplement) :
+            public AutomataException(String reason, String supplement = "") :
                 base($"{MESSAGE_BASE} {reason} {supplement}") { }
         }
 
-        public AutomataType Type { get; protected set; }
-        public List<String> Symbols { get; protected set; }
-        public List<State> States { get; protected set; }
-        public List<Transition> Transitions { get; protected set; }
-        public State InitialState { get; protected set; }
-        public List<State> FinalStates { get; protected set; }
+        protected AutomataType AutomataType { get; set; }
+        protected List<String> Symbols { get; set; }
+        protected List<State> States { get; set; }
+        protected List<Transition> Transitions { get; set; }
+        protected State InitialState { get; set; }
+        protected List<State> FinalStates { get; set; }
 
         #region automata methods
 
         // ctor
         public Automata() {
-            Symbols = new List<String>();
-            States = new List<State>();
+            Symbols     = new List<String>();
+            States      = new List<State>();
             Transitions = new List<Transition>();
             FinalStates = new List<State>();
         }
 
-        public void SetType(AutomataType type) {
-            this.Type = type;
+        public void SetAutomataType(AutomataType automataType) {
+            AutomataType = automataType;
+        }
+
+        public AutomataType GetAutomataType() {
+            return AutomataType;
         }
 
         public void Clear() {
-            this.ClearStates();
+            ClearSymbols(false);
+            ClearStates(false);
+            ClearTransitions();
         }
 
         public override String ToString() {
-            String newLine = Environment.NewLine;
-            String type = this.Type.ToString() + newLine;
-            String states = "";
-            String initialState = this.InitialState.ToString() + newLine;
-            String finalStates = "";
-            String transitions = "";
+            String commaSeparator = ", ";
+            String type           = AutomataType.ToString();
+            String states         = "";
+            String initialState   = InitialState.ToString();
+            String finalStates    = "";
+            String transitions    = "";
 
-            this.States.ForEach(
-                x => states += x.ToString() + newLine
+            States.ForEach(
+                x => states += x.ToString() + commaSeparator
             );
-            this.FinalStates.ForEach(
-                x => finalStates += x.ToString() + newLine
+            FinalStates.ForEach(
+                x => finalStates += x.ToString() + commaSeparator
             );
-            this.Transitions.ForEach(
-                x => transitions += x.ToString() + newLine
+            Transitions.ForEach(
+                x => transitions += x.ToString() + commaSeparator
             );
 
-            return $"{type}{states}{initialState}{finalStates}{transitions}";
+            return
+                $"("                                 +
+                    "{type}{commaSeparator}"         +
+                    "{states}{commaSeparator}"       +
+                    "{initialState}{commaSeparator}" +
+                    "{finalStates}{commaSeparator}"  +
+                    "{transitions}"                  +
+                ")";
         }
 
         #endregion
@@ -80,7 +93,7 @@ namespace AutomataCLI.Struct {
         #region symbol methods
 
         public void AddSymbol(String symbol) {
-            this.Symbols.Add(symbol);
+            Symbols.Add(symbol);
         }
 
         public void AddSymbols(String[] symbols) {
@@ -89,11 +102,18 @@ namespace AutomataCLI.Struct {
             );
         }
 
-        public void RemoveSymbol(String symbol, Boolean removeDependencies = false) {
-            this.Symbols.Remove(symbol);
-            if (removeDependencies) {
+        public String[] GetSymbols() {
+            return Symbols.ToArray();
+        }
 
+        public void RemoveSymbol(String symbol, Boolean removeDependencies = false) {
+            if (removeDependencies) {
+                RemoveTransitions(Transitions.Where(
+                    x => x.Input == symbol
+                ).ToArray());
             }
+
+            Symbols.Remove(symbol);
         }
 
         public void RemoveSymbols(String[] symbols, Boolean removeDependencies = false) {
@@ -103,84 +123,103 @@ namespace AutomataCLI.Struct {
         }
 
         public void SetSymbols(String[] symbols, Boolean removeOldDependencies = false) {
-            this.Symbols = new List<String>(symbols);
+            ClearSymbols(removeOldDependencies);
+            AddSymbols(symbols);
         }
 
         public Boolean ContainsSymbol(String symbol) {
-            return this.Symbols.Exists(
+            return Symbols.Exists(
                 x => x == symbol
             );
         }
 
         public void ClearSymbols(Boolean removeDependencies = false) {
-            this.Symbols.Clear();
-            if (removeDependencies) {
-
-            }
+            RemoveSymbols(Symbols.ToArray(), removeDependencies);
         }
 
         #endregion
 
         #region state methods
 
-        public void AddState(State state, Boolean isFinal = false) {
+        public void AddState(State state) {
             if (ContainsStateName(state.Name)) {
                 throw new AutomataException(AutomataException.MESSAGE_DUPLICATE_STATE, state.Name);
             }
 
-            this.States.Add(state);
-            this.RefreshFinalStates();
+            States.Add(state);
+            RefreshFinalStates();
         }
 
         public void AddState(String stateName, Boolean isFinal = false) {
             AddState(new State(stateName, isFinal));
         }
 
-        public void AddStates(State[] states, Boolean isFinal = false) {
+        public void AddStates(State[] states) {
             states.ToList().ForEach(
-                x => AddState(x, isFinal)
+                x => AddState(x)
             );
         }
 
+        public State[] GetStates() {
+            return States.ToArray();
+        }
+
+        public State[] GetFinalStates() {
+            return FinalStates.ToArray();
+        }
+
+        public State GetInitialState() {
+            return InitialState;
+        }
+
         public void RemoveState(State state, Boolean removeDependencies = false) {
-            this.States.Remove(state);
             if (removeDependencies) {
-                this.Transitions.Where(
+                RemoveTransitions(Transitions.Where(
                     x => x.From == state || x.To == state
-                );
+                ).ToArray());
             }
-            this.RefreshFinalStates();
+
+            if (InitialState == state) {
+                InitialState = null;
+            }
+
+            States.Remove(state);
+            RefreshFinalStates();
         }
 
         public void RemoveState(String stateName, Boolean removeDependencies = false) {
-            RemoveState(this.States.Find(
+            RemoveState(States.Find(
                 x => x.Name == stateName
             ), removeDependencies);
         }
 
-        public void RemoveStates(State[] states, Boolean removeDependencies) {
+        public void RemoveStates(State[] states, Boolean removeDependencies = false) {
             states.ToList().ForEach(
                 x => RemoveState(x, removeDependencies)
             );
         }
 
-        public void RemoveStates(String[] states, Boolean removeDependencies) {
+        public void RemoveStates(String[] states, Boolean removeDependencies = false) {
             states.ToList().ForEach(
                 x => RemoveState(x, removeDependencies)
             );
         }
 
-        public void SetStates(ICollection<State> stateCollection, Boolean removeOldDependencies = false) {
-            this.States = new List<State>(stateCollection);
-            this.RefreshFinalStates();
+        public void SetStates(State[] states, Boolean removeOldDependencies = false) {
+            ClearStates(removeOldDependencies);
+            AddStates(states);
         }
 
         public Boolean ContainsStateName(String stateName) {
-            return this.States.Exists(x => x.Name == stateName);
+            return States.Exists(
+                x => x.Name == stateName
+            );
         }
 
         public Boolean ContainsState(State state) {
-            return this.States.Exists(x => x == state);
+            return States.Exists(
+                x => x == state
+            );
         }
 
         public void SetInitialState(State state) {
@@ -188,19 +227,17 @@ namespace AutomataCLI.Struct {
                 throw new AutomataException(AutomataException.MESSAGE_STATE_NOT_FOUND, state.Name);
             }
 
-            this.InitialState = state;
+            InitialState = state;
         }
 
         private void RefreshFinalStates() {
-            if (States != null) {
-                this.FinalStates = States.Where(
-                    x => x.IsFinal
-                ).ToList();
-            }
+            FinalStates = States.Where(
+                x => x.IsFinal
+            ).ToList();
         }
 
         public void ClearStates(Boolean removeDependencies = false) {
-            this.States.Clear();
+            RemoveStates(States.ToArray());
         }
 
         #endregion
@@ -229,7 +266,7 @@ namespace AutomataCLI.Struct {
                 );
             }
 
-            this.Transitions.Add(transition);
+            Transitions.Add(transition);
         }
 
         public void AddTransition(State stateFrom, String input, State stateTo) {
@@ -247,48 +284,58 @@ namespace AutomataCLI.Struct {
             }
 
             AddTransition(
-                this.States.Find(
+                States.Find(
                     x => x.Name == stateFrom
                 ), input,
-                this.States.Find(
+                States.Find(
                     x => x.Name == stateTo
                 )
             );
         }
 
-        public void RemoveTransition(Transition transition, Boolean removeDependencies = false) {
-            this.Transitions.Remove(transition);
-
-            if (removeDependencies) {
-                this.RemoveStates(new State[] {
-                    transition.From,
-                    transition.To
-                }, false);
-
-                this.RemoveSymbol(transition.Input, false);
-            }
+        public void AddTransitions(Transition[] transitions) {
+            transitions.ToList().ForEach(
+                x => AddTransition(x)
+            );
         }
 
-        public void RemoveTransition(State fromState, String input, State toState, Boolean removeDependencies = false) {
-            RemoveTransition(this.Transitions.Find(
+        public void RemoveTransition(Transition transition) {
+            Transitions.Remove(transition);
+        }
+
+        public void RemoveTransition(State fromState, String input, State toState) {
+            RemoveTransition(Transitions.Find(
                 x => x.From == fromState && x.Input == input && x.To == toState
-            ), removeDependencies);
+            ));
+        }
+
+        public void RemoveTransitions(Transition[] transitions) {
+            transitions.ToList().ForEach(
+                x => RemoveTransition(x)
+            );
+        }
+
+        public void SetTransitions(Transition[] transitions) {
+            ClearTransitions();
+            AddTransitions(transitions);
         }
 
         public Boolean ContainsTransition(State fromState, String input, State toState) {
-            return this.Transitions.Exists(
-                x => x.From == fromState && x.Input == input && toState == x.To
+            return Transitions.Exists(
+                x => x.From  == fromState &&
+                     x.Input == input     &&
+                     x.To    == toState
             );
         }
 
         public Boolean ContainsTransition(Transition transition) {
-            return this.Transitions.Exists(
+            return Transitions.Exists(
                 x => x == transition
             );
         }
 
-        public void ClearTransitions(Boolean removeDependencies = false) {
-            this.Transitions.Clear();
+        public void ClearTransitions() {
+            RemoveTransitions(Transitions.ToArray());
         }
 
         #endregion
