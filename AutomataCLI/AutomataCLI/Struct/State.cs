@@ -10,7 +10,7 @@ namespace AutomataCLI.Struct {
             => new State("Empty");
 
         public State(String name, Boolean isFinal = false) {
-            this.Name    = name;
+            this.Name    = name.Trim();
             this.IsFinal = isFinal;
         }
 

@@ -17,9 +17,9 @@ namespace AutomataCLI.Struct {
         
         public Boolean Matches(String input){
             
-            Transition initialTransition = Automata.Transitions.Find(
+            Transition initialTransition = Automata.GetTransitions().ToList().Find(
                 x => (
-                    x.From  == this.Automata.InitialState && (
+                    x.From  == this.Automata.GetInitialState() && (
                         x.Input == input[0].ToString() ||
                         x.Input == null
                     )

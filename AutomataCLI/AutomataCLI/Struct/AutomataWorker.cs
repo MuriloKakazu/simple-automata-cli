@@ -8,11 +8,11 @@ namespace AutomataCLI.Struct {
     public class AutomataWorker {
         private Automata Automata {get; set;}
         private State CurrentState {get; set;}
-        private List<Char> InputSymbols {get; set;}
+        private List<String> InputSymbols {get; set;}
         private State LastState {get; set;}
         private AutomataWorker LastWorker {get; set;}
 
-        public AutomataWorker(Automata automata, State currentState, List<Char> inputSymbols){
+        public AutomataWorker(Automata automata, State currentState, List<String> inputSymbols){
             this.Automata     = automata;
             this.CurrentState = currentState;
             this.InputSymbols = inputSymbols;
@@ -21,11 +21,11 @@ namespace AutomataCLI.Struct {
         async public Task<Boolean> Work(){
             
             var possibleTransitions = new List<Transition>();
-            var remainingSymbols    = new List<Char>(InputSymbols);
+            var remainingSymbols    = new List<String>(InputSymbols);
 
             for(int i = 0; i < InputSymbols.Count; i++){   
                 var currentSymbol = InputSymbols[i]; 
-                possibleTransitions = this.Automata.Transitions.Where(
+                possibleTransitions = this.Automata.GetTransitions().ToList().Where(
                     x => (
                         x.From  == this.CurrentState && (
                             x.Input == currentSymbol.ToString() ||
@@ -53,7 +53,7 @@ namespace AutomataCLI.Struct {
                         }
 
                         var cts = new CancellationTokenSource();
-                        Boolean[] results = await summonWorkers(possibleTransitions, remainingSymbols);
+                        Boolean[] results = await SummonWorkers(possibleTransitions, remainingSymbols);
                         if(results.Any(x => x)){
                             cts.Cancel();
                             return true;
@@ -63,7 +63,7 @@ namespace AutomataCLI.Struct {
             }
             return this.Automata.FinalStates.Contains(this.CurrentState);
         }
-        public Task<Boolean[]> summonWorkers(List<Transition> possibleTransitions, List<Char> remainingSymbols) {
+        public Task<Boolean[]> SummonWorkers(List<Transition> possibleTransitions, List<Char> remainingSymbols) {
             
             return Task.WhenAll(possibleTransitions.Select(x => new AutomataWorker(this.Automata, x.To, remainingSymbols).Work()));
         }
