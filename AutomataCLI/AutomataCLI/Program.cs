@@ -88,12 +88,51 @@ namespace AutomataCLI {
                 "(q2, a, q2)" + newLine +
                 "####" + newLine;
 
-            Automata automata2 = AutomataSerializer.Deserialize(input2);
+            Automata automata2 = null;
+
+            try {
+                automata2 = AutomataSerializer.Deserialize(input2);
+            } catch (Exception e) {
+                Console.WriteLine(e.Message);
+            }
 
             watch.Stop();
 
             Console.WriteLine("Deserialized Automata:");
             Console.WriteLine(automata2);
+            Console.WriteLine($"Deserialization time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
+
+            // FAIL test
+            Console.WriteLine("Test 3:");
+
+            watch.Reset();
+            watch.Start();
+            String input3 =
+                "AFN" + newLine +
+                "q0,q1,q3" + newLine +
+                "a, c" + newLine +
+                "q0" + newLine +
+                "q2" + newLine +
+                "(q3, a, q2)" + newLine +
+                "(q0, a, q1)" + newLine +
+                "(q1, a, q2)" + newLine +
+                "(q1, b, q2)" + newLine +
+                "(q1, b, q0)" + newLine +
+                "(q2, a, q2)" + newLine +
+                "####" + newLine;
+
+            Automata automata3 = null;
+
+            try {
+                automata3 = AutomataSerializer.Deserialize(input3);
+            } catch (Exception e) {
+                Console.WriteLine(e.Message);
+            }
+
+            watch.Stop();
+
+            Console.WriteLine("Deserialized Automata:");
+            Console.WriteLine(automata3);
             Console.WriteLine($"Deserialization time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
 
             Console.ReadKey();
