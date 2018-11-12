@@ -52,6 +52,7 @@
     <Compile Include="Struct\AutomataReader.cs" />
     <Compile Include="Struct\AutomataWorker.cs" />
     <Compile Include="Utils\ObjectExtension.cs" />
+    <Compile Include="Serialization\AutomataSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
