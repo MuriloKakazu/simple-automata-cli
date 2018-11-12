@@ -8,9 +8,9 @@ namespace AutomataCLI.Struct {
     public class Automata {
         public AutomataType Type { get; protected set; }
         public List<Char> Symbols { get; protected set; }
-        public List<State> States { get; protected set; }
-        public List<Transition> Transitions { get; protected set; }
-        public State InitialState { get; protected set; }
+        public List<State> States { get; set; }
+        public List<Transition> Transitions { get; set; }
+        public State InitialState { get; set; }
         public List<State> FinalStates { get; protected set; }
 
         public Automata() {
@@ -51,7 +51,7 @@ namespace AutomataCLI.Struct {
             this.InitialState = state;
         }
 
-        private void RefreshFinalStates() {
+        public void RefreshFinalStates() {
             if (States != null) {
                 this.FinalStates = States.Where(
                     x => x.IsFinal
