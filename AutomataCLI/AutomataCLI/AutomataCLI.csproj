@@ -50,6 +50,7 @@
     <Compile Include="Struct\State.cs" />
     <Compile Include="Struct\Transition.cs" />
     <Compile Include="Utils\ObjectExtension.cs" />
+    <Compile Include="Serialization\AutomataSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
