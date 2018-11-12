@@ -15,6 +15,7 @@ namespace AutomataCLI.Struct {
         }
 
         public override String ToString()
-            => $"{Name} ({(IsFinal ? "Final" : "Not Final")})";
+          //=> $"{Name} <{(IsFinal ? "Final" : "Not Final")}>";
+            => $"{Name}";
     }
 }
