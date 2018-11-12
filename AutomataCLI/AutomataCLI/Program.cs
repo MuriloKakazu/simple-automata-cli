@@ -5,16 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using AutomataCLI.Struct;
 using System.Diagnostics;
+using AutomataCLI.Serialization;
 
 namespace AutomataCLI {
     class Program {
         static void Main(string[] args) {
+            String newLine = "\n";
             Stopwatch watch = new Stopwatch();
+
+            Console.WriteLine("Test 1:");
+
             watch.Start();
 
             Automata automata = new Automata();
 
             String input = "123";
+
+            automata.SetSymbols(new String[] {
+                "1", "2", "3"
+            });
 
             State state0 = new State("Q0", false),
                   state1 = new State("Q1", false),
@@ -22,17 +31,17 @@ namespace AutomataCLI {
                   state3 = new State("Q3", false),
                   state4 = new State("Q4", false);
 
-            automata.States = new List<State>(){
+            automata.SetStates(new State[]{
                 state0,
                 state1,
                 state2,
                 state3,
                 state4
-            };
+            });
 
-            automata.InitialState = state1;
+            automata.SetInitialState(state1);
 
-            automata.Transitions = new List<Transition>(){
+            automata.SetTransitions(new Transition[] {
                 new Transition(state0, "1", state0),
                 new Transition(state0, "2", state0),
                 new Transition(state0, "3", state0),
@@ -54,13 +63,78 @@ namespace AutomataCLI {
                 new Transition(state4, "2", state4),
                 new Transition(state4, "3", state4),
                 new Transition(state4, "3", state2),
-            };
-
-            automata.RefreshFinalStates();
+            });
 
             Console.WriteLine(new AutomataReader(automata).Matches(input));
             watch.Stop();
-            Console.WriteLine(watch.Elapsed.TotalMilliseconds.ToString());
+            Console.WriteLine($"Execution time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
+
+
+            Console.WriteLine("Test 2:");
+
+            watch.Reset();
+            watch.Start();
+            String input2 =
+                "AFN" + newLine +
+                "q0,q1,q2" + newLine +
+                "a, b" + newLine +
+                "q0" + newLine +
+                "q2" + newLine +
+                "(q0, a, q2)" + newLine +
+                "(q0, a, q1)" + newLine +
+                "(q1, a, q2)" + newLine +
+                "(q1, b, q2)" + newLine +
+                "(q1, b, q0)" + newLine +
+                "(q2, a, q2)" + newLine +
+                "####" + newLine;
+
+            Automata automata2 = null;
+
+            try {
+                automata2 = AutomataSerializer.Deserialize(input2);
+            } catch (Exception e) {
+                Console.WriteLine(e.Message);
+            }
+
+            watch.Stop();
+
+            Console.WriteLine("Deserialized Automata:");
+            Console.WriteLine(automata2);
+            Console.WriteLine($"Deserialization time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
+
+            // FAIL test
+            Console.WriteLine("Test 3:");
+
+            watch.Reset();
+            watch.Start();
+            String input3 =
+                "AFN" + newLine +
+                "q0,q1,q3" + newLine +
+                "a, c" + newLine +
+                "q0" + newLine +
+                "q2" + newLine +
+                "(q3, a, q2)" + newLine +
+                "(q0, a, q1)" + newLine +
+                "(q1, a, q2)" + newLine +
+                "(q1, b, q2)" + newLine +
+                "(q1, b, q0)" + newLine +
+                "(q2, a, q2)" + newLine +
+                "####" + newLine;
+
+            Automata automata3 = null;
+
+            try {
+                automata3 = AutomataSerializer.Deserialize(input3);
+            } catch (Exception e) {
+                Console.WriteLine(e.Message);
+            }
+
+            watch.Stop();
+
+            Console.WriteLine("Deserialized Automata:");
+            Console.WriteLine(automata3);
+            Console.WriteLine($"Deserialization time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
+
             Console.ReadKey();
         }
     }

@@ -61,31 +61,36 @@ namespace AutomataCLI.Struct {
         }
 
         public override String ToString() {
+            String newLine = Environment.NewLine;
+            String tab = "\t";
             String commaSeparator = ", ";
-            String type           = AutomataType.ToString();
+            String type           = tab + AutomataType.ToString();
             String states         = "";
-            String initialState   = InitialState.ToString();
+            String symbols        = "";
+            String initialState   = tab + InitialState.ToString();
             String finalStates    = "";
             String transitions    = "";
 
             States.ForEach(
                 x => states += x.ToString() + commaSeparator
             );
+            Symbols.ForEach(
+                x => symbols += x + commaSeparator
+            );
             FinalStates.ForEach(
-                x => finalStates += x.ToString() + commaSeparator
+                x => finalStates += tab + x.ToString() + commaSeparator
             );
             Transitions.ForEach(
-                x => transitions += x.ToString() + commaSeparator
+                x => transitions += tab + x.ToString() + newLine
             );
 
             return
-                $"("                                 +
-                    "{type}{commaSeparator}"         +
-                    "{states}{commaSeparator}"       +
-                    "{initialState}{commaSeparator}" +
-                    "{finalStates}{commaSeparator}"  +
-                    "{transitions}"                  +
-                ")";
+                $"Type: {newLine}{type}{newLine}" +
+                $"States: {newLine}{tab}{states}{newLine}" +
+                $"Symbols: {newLine}{tab}{symbols}{newLine}" +
+                $"InitialState: {newLine}{initialState}{newLine}" +
+                $"FinalStates: {newLine}{finalStates}{newLine}" +
+                $"Transitions: {newLine}{transitions}";
         }
 
         #endregion
@@ -143,7 +148,9 @@ namespace AutomataCLI.Struct {
 
         public void AddState(State state) {
             if (ContainsStateName(state.Name)) {
-                throw new AutomataException(AutomataException.MESSAGE_DUPLICATE_STATE, state.Name);
+                throw new AutomataException(
+                    AutomataException.MESSAGE_DUPLICATE_STATE, state.Name
+                );
             }
 
             States.Add(state);
@@ -173,6 +180,13 @@ namespace AutomataCLI.Struct {
         }
 
         public State GetStateLike(String stateName) {
+            if (!ContainsStateName(stateName)) {
+                throw new AutomataException(
+                    AutomataException.MESSAGE_STATE_NOT_FOUND,
+                    $"{stateName}"
+                );
+            }
+
             return States.Find(
                 x => x.Name == stateName
             );
@@ -230,12 +244,14 @@ namespace AutomataCLI.Struct {
 
         public void SetInitialState(State state) {
             if (!ContainsState(state)) {
-                throw new AutomataException(AutomataException.MESSAGE_STATE_NOT_FOUND, state.Name);
+                throw new AutomataException(
+                    AutomataException.MESSAGE_STATE_NOT_FOUND, state.Name
+                );
             }
 
             InitialState = state;
         }
-        
+
         private void RefreshFinalStates() {
             FinalStates = States.Where(
                 x => x.IsFinal
@@ -253,12 +269,12 @@ namespace AutomataCLI.Struct {
         public void AddTransition(Transition transition) {
             if (!ContainsState(transition.From)) {
                 throw new AutomataException(
-                    AutomataException.MESSAGE_STATE_NOT_FOUND, transition.From.Name
+                    AutomataException.MESSAGE_STATE_NOT_FOUND, transition.From?.Name
                 );
             }
             if (!ContainsState(transition.To)) {
                 throw new AutomataException(
-                    AutomataException.MESSAGE_STATE_NOT_FOUND, transition.To.Name
+                    AutomataException.MESSAGE_STATE_NOT_FOUND, transition.To?.Name
                 );
             }
             if (!ContainsSymbol(transition.Input)) {
@@ -283,10 +299,14 @@ namespace AutomataCLI.Struct {
 
         public void AddTransition(String stateFrom, String input, String stateTo) {
             if (!ContainsStateName(stateFrom)) {
-                throw new AutomataException(AutomataException.MESSAGE_STATE_NOT_FOUND, stateFrom);
+                throw new AutomataException(
+                    AutomataException.MESSAGE_STATE_NOT_FOUND, stateFrom
+                );
             }
             if (!ContainsStateName(stateTo)) {
-                throw new AutomataException(AutomataException.MESSAGE_STATE_NOT_FOUND, stateTo);
+                throw new AutomataException(
+                    AutomataException.MESSAGE_STATE_NOT_FOUND, stateTo
+                );
             }
 
             AddTransition(
@@ -310,6 +330,13 @@ namespace AutomataCLI.Struct {
         }
 
         public Transition GetTransitionLike(String stateFrom, String input, String stateTo) {
+            if (!ContainsTransition(stateFrom, input, stateTo)) {
+                throw new AutomataException(
+                    AutomataException.MESSAGE_TRANSITION_NOT_FOUND,
+                    $"({stateFrom}, {input}, {stateTo})"
+                );
+            }
+
             return Transitions.Find(
                 x => x.From.Name == stateFrom &&
                      x.Input     == input     &&
@@ -338,6 +365,13 @@ namespace AutomataCLI.Struct {
             AddTransitions(transitions);
         }
 
+
+        public Boolean ContainsTransition(Transition transition) {
+            return Transitions.Exists(
+                x => x == transition
+            );
+        }
+
         public Boolean ContainsTransition(State fromState, String input, State toState) {
             return Transitions.Exists(
                 x => x.From  == fromState &&
@@ -346,9 +380,11 @@ namespace AutomataCLI.Struct {
             );
         }
 
-        public Boolean ContainsTransition(Transition transition) {
+        public Boolean ContainsTransition(String fromState, String input, String toState) {
             return Transitions.Exists(
-                x => x == transition
+                x => x.From.Name == fromState &&
+                     x.Input     == input     &&
+                     x.To.Name   == toState
             );
         }
 
