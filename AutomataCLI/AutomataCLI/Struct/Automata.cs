@@ -93,7 +93,7 @@ namespace AutomataCLI.Struct {
         #region symbol methods
 
         public void AddSymbol(String symbol) {
-            Symbols.Add(symbol);
+            Symbols.Add(symbol.Trim());
         }
 
         public void AddSymbols(String[] symbols) {
@@ -170,6 +170,12 @@ namespace AutomataCLI.Struct {
 
         public State GetInitialState() {
             return InitialState;
+        }
+
+        public State GetStateLike(String stateName) {
+            return States.Find(
+                x => x.Name == stateName
+            );
         }
 
         public void RemoveState(State state, Boolean removeDependencies = false) {
@@ -296,6 +302,18 @@ namespace AutomataCLI.Struct {
         public void AddTransitions(Transition[] transitions) {
             transitions.ToList().ForEach(
                 x => AddTransition(x)
+            );
+        }
+
+        public Transition[] GetTransitions() {
+            return Transitions.ToArray();
+        }
+
+        public Transition GetTransitionLike(String stateFrom, String input, String stateTo) {
+            return Transitions.Find(
+                x => x.From.Name == stateFrom &&
+                     x.Input     == input     &&
+                     x.To.Name   == stateTo
             );
         }
 

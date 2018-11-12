@@ -8,8 +8,7 @@ namespace AutomataCLI.Struct {
 
         public Transition(State from, String input, State to) {
             this.From = from;
-
-            this.Input = input;
+            this.Input = input.Trim();
             this.To    = to;
         }
 

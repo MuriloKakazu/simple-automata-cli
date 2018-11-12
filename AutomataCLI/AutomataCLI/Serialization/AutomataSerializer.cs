@@ -6,8 +6,8 @@ using AutomataCLI.Struct;
 namespace AutomataCLI.Serialization {
 
     public class AutomataSerializerException : Exception {
-        const String EXCEPTION_MESSAGE = "Invalid Automata. ";
-        public AutomataSerializerException(String reason) : base($"{EXCEPTION_MESSAGE}{reason}") { }
+        const String MESSAGE_BASE = "Invalid automata. ";
+        public AutomataSerializerException(String supplement) : base($"{MESSAGE_BASE}{supplement}") { }
     }
 
     // TO DO
@@ -21,6 +21,7 @@ namespace AutomataCLI.Serialization {
         }
 
         public static Automata Deserialize(String plainText) {
+            Boolean abandon = false;
             Char newLine = '\n';
             Char commaSeparator = ',';
             String[] textLines = plainText.Split(newLine);
@@ -30,27 +31,74 @@ namespace AutomataCLI.Serialization {
                 String type = textLines[0];
                 List<String> states = textLines[1].Split(commaSeparator).ToList();
                 List<String> symbols = textLines[2].Split(commaSeparator).ToList();
-                String initialState = textLines[3];
+                String initialState = textLines[3].Trim();
                 List<String> finalStates = textLines[4].Split(commaSeparator).ToList();
+                List<String> transitions = new List<String>();
 
-                deserializedAutomata.SetType(DeserializeType(type));
+                for (Int32 i = 5; i < textLines.Length; i++) {
+                    transitions.Add(textLines[i]);
+                }
+
+                states.ForEach(
+                    x => x = x.Trim()
+                );
+                symbols.ForEach(
+                    x => x = x.Trim()
+                );
+                finalStates.ForEach(
+                    x => x = x.Trim()
+                );
+                transitions.ForEach(
+                    x => x = x.Trim()
+                );
+
+                deserializedAutomata.SetAutomataType(DeserializeType(type));
 
                 states.ForEach(
                     x => {
-                        if (!deserializedAutomata.ContainsState(x)) {
+                        try {
                             deserializedAutomata.AddState(DeserializeState(x));
-                        } else {
-                            throw new AutomataSerializerException($"State \"{x}\" is defined more than once.");
+                        } catch (Exception e) {
+                            abandon = !HandleException(e, x, "State");
+                            if (abandon) {
+                                throw new AutomataSerializerException("Serialization was abandoned.");
+                            }
                         }
                     }
                 );
 
                 symbols.ForEach(
-                    x => deserializedAutomata.AddSymbol(x)
+                    x => {
+                        try {
+                            deserializedAutomata.AddSymbol(x);
+                        } catch (Exception e) {
+                            abandon = !HandleException(e, x, "Symbol");
+                            if (abandon) {
+                                throw new AutomataSerializerException("Serialization was abandoned.");
+                            }
+                        }
+                    }
                 );
 
-                if (deserializedAutomata.ContainsState(initialState)) {
-                    deserializedAutomata.SetInitialState(deserializedAutomata.States.Find(x => x.Name == initialState));
+                transitions.ForEach(
+                    x => {
+                        try {
+                            deserializedAutomata.AddTransition(DeserializeTransition(x, deserializedAutomata));
+                        } catch (Exception e) {
+                            abandon = !HandleException(e, x, "Transition");
+                            if (abandon) {
+                                throw new AutomataSerializerException("Serialization was abandoned.");
+                            }
+                        }
+                    }
+                );
+
+                if (deserializedAutomata.ContainsStateName(initialState)) {
+                    deserializedAutomata.SetInitialState(
+                        deserializedAutomata.GetStates().ToList().Find(
+                            x => x.Name == initialState
+                        )
+                    );
                 } else {
                     throw new AutomataSerializerException($"Initial state \"{initialState}\" is invalid.");
                 }
@@ -62,29 +110,37 @@ namespace AutomataCLI.Serialization {
             return deserializedAutomata;
         }
 
+        protected static Boolean HandleException(Exception e, String memberName, String memberType) {
+            Console.WriteLine($"Error: {e.Message}.");
+            Console.WriteLine($"Would you like to skip this error? ({memberType} \"{memberName}\" will be ignored)");
+            Console.WriteLine($"Type \"Y\" to continue:");
+            return Console.ReadLine().ToUpper() == "Y";
+        }
+
         public static String Serialize(Automata automata) {
+            String commaSeparator = ", ";
             String newLine = Environment.NewLine;
             String EOF = "####";
             String serializedAutomata = "";
 
-            automata.States.ForEach(
-                x => serializedAutomata += SerializeState(x)
+            automata.GetStates().ToList().ForEach(
+                x => serializedAutomata += SerializeState(x) + commaSeparator
             );
             serializedAutomata += newLine;
 
-            automata.Symbols.ForEach(
-                x => serializedAutomata += x
+            automata.GetSymbols().ToList().ForEach(
+                x => serializedAutomata += x + commaSeparator
             );
             serializedAutomata += newLine;
 
-            serializedAutomata += SerializeState(automata.InitialState) + newLine;
+            serializedAutomata += SerializeState(automata.GetInitialState()) + newLine;
 
-            automata.FinalStates.ForEach(
-                x => serializedAutomata += SerializeState(x)
+            automata.GetFinalStates().ToList().ForEach(
+                x => serializedAutomata += SerializeState(x) + commaSeparator
             );
             serializedAutomata += newLine;
 
-            automata.Transitions.ForEach(
+            automata.GetTransitions().ToList().ForEach(
                 x => serializedAutomata += SerializeTransition(x) + newLine
             );
             serializedAutomata += EOF;
@@ -113,8 +169,18 @@ namespace AutomataCLI.Serialization {
             return state.Name;
         }
 
-        private static Transition DeserializeTransition(String plainText) {
-            return null;
+        private static Transition DeserializeTransition(String plainText, Automata automata) {
+            String[] transitionMembers = plainText.Replace("(", "").Replace(")", "").Split(',');
+
+            if (transitionMembers.Length != 3) {
+                throw new AutomataSerializerException($"Invalid transition: {plainText}");
+            }
+
+            return new Transition(
+                automata.GetStateLike(transitionMembers[0]), // stateFrom
+                transitionMembers[1],                        // input
+                automata.GetStateLike(transitionMembers[2])  // stateTo
+            );
         }
 
         private static String SerializeTransition(Transition transition) {
