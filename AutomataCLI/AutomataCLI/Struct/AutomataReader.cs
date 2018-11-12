@@ -32,7 +32,8 @@ namespace AutomataCLI.Struct {
             State firstWorkerState = initialTransition.From;
              
             try{
-                return new AutomataWorker(this.Automata, firstWorkerState, input.ToCharArray().ToList()).Work().Result;
+                return new AutomataWorker(this.Automata, firstWorkerState, 
+                    input.Select(x => x.ToString()).ToList()).Work().Result;
             } catch(AggregateException e){
                 throw e.Flatten();
             }

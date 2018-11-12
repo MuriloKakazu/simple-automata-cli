@@ -61,10 +61,12 @@ namespace AutomataCLI.Struct {
         }
 
         public override String ToString() {
+            String newLine = Environment.NewLine;
+            String tab = "\t";
             String commaSeparator = ", ";
-            String type           = AutomataType.ToString();
+            String type           = tab + AutomataType.ToString();
             String states         = "";
-            String initialState   = InitialState.ToString();
+            String initialState   = tab + InitialState.ToString();
             String finalStates    = "";
             String transitions    = "";
 
@@ -72,20 +74,18 @@ namespace AutomataCLI.Struct {
                 x => states += x.ToString() + commaSeparator
             );
             FinalStates.ForEach(
-                x => finalStates += x.ToString() + commaSeparator
+                x => finalStates += tab + x.ToString() + commaSeparator
             );
             Transitions.ForEach(
-                x => transitions += x.ToString() + commaSeparator
+                x => transitions += tab + x.ToString() + newLine
             );
 
             return
-                $"("                                 +
-                    "{type}{commaSeparator}"         +
-                    "{states}{commaSeparator}"       +
-                    "{initialState}{commaSeparator}" +
-                    "{finalStates}{commaSeparator}"  +
-                    "{transitions}"                  +
-                ")";
+                $"Type: {newLine}{type}{newLine}" +
+                $"States: {newLine}{tab}{states}{newLine}" +
+                $"InitialState: {newLine}{initialState}{newLine}" +
+                $"FinalStates: {newLine}{finalStates}{newLine}" +
+                $"Transitions: {newLine}{transitions}";
         }
 
         #endregion
@@ -235,7 +235,7 @@ namespace AutomataCLI.Struct {
 
             InitialState = state;
         }
-        
+
         private void RefreshFinalStates() {
             FinalStates = States.Where(
                 x => x.IsFinal

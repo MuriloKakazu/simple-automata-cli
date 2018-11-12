@@ -61,9 +61,9 @@ namespace AutomataCLI.Struct {
                         return false;
                 }
             }
-            return this.Automata.FinalStates.Contains(this.CurrentState);
+            return this.Automata.GetFinalStates().Contains(this.CurrentState);
         }
-        public Task<Boolean[]> SummonWorkers(List<Transition> possibleTransitions, List<Char> remainingSymbols) {
+        public Task<Boolean[]> SummonWorkers(List<Transition> possibleTransitions, List<String> remainingSymbols) {
             
             return Task.WhenAll(possibleTransitions.Select(x => new AutomataWorker(this.Automata, x.To, remainingSymbols).Work()));
         }

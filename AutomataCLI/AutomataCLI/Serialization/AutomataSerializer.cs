@@ -14,6 +14,10 @@ namespace AutomataCLI.Serialization {
     public class AutomataSerializer {
         static HashSet<String> ValidAutomataTypes = new HashSet<String>();
 
+        const String COMMA_SEPARATOR_STR = ", ";
+        const String NEWLINE_STR = "\n";
+        const String EOF_STR = "####";
+
         static AutomataSerializer() {
             Enum.GetNames(typeof(AutomataType)).ToList().ForEach(
                 x => ValidAutomataTypes.Add(x)
@@ -28,15 +32,17 @@ namespace AutomataCLI.Serialization {
             Automata deserializedAutomata = new Automata();
 
             if (textLines.Length >= 7) {
-                String type = textLines[0];
+                String type = textLines[0].Trim();
                 List<String> states = textLines[1].Split(commaSeparator).ToList();
                 List<String> symbols = textLines[2].Split(commaSeparator).ToList();
                 String initialState = textLines[3].Trim();
                 List<String> finalStates = textLines[4].Split(commaSeparator).ToList();
                 List<String> transitions = new List<String>();
 
-                for (Int32 i = 5; i < textLines.Length; i++) {
-                    transitions.Add(textLines[i]);
+                for (Int32 i = 5; i < textLines.Length - 1; i++) {
+                    if (!String.IsNullOrWhiteSpace(textLines[i]) && textLines[i] != EOF_STR) {
+                        transitions.Add(textLines[i]);
+                    }
                 }
 
                 states.ForEach(
@@ -57,7 +63,7 @@ namespace AutomataCLI.Serialization {
                 states.ForEach(
                     x => {
                         try {
-                            deserializedAutomata.AddState(DeserializeState(x));
+                            deserializedAutomata.AddState(DeserializeState(x, finalStates.ToArray()));
                         } catch (Exception e) {
                             abandon = !HandleException(e, x, "State");
                             if (abandon) {
@@ -118,32 +124,29 @@ namespace AutomataCLI.Serialization {
         }
 
         public static String Serialize(Automata automata) {
-            String commaSeparator = ", ";
-            String newLine = Environment.NewLine;
-            String EOF = "####";
             String serializedAutomata = "";
 
             automata.GetStates().ToList().ForEach(
-                x => serializedAutomata += SerializeState(x) + commaSeparator
+                x => serializedAutomata += SerializeState(x) + COMMA_SEPARATOR_STR
             );
-            serializedAutomata += newLine;
+            serializedAutomata += NEWLINE_STR;
 
             automata.GetSymbols().ToList().ForEach(
-                x => serializedAutomata += x + commaSeparator
+                x => serializedAutomata += x + COMMA_SEPARATOR_STR
             );
-            serializedAutomata += newLine;
+            serializedAutomata += NEWLINE_STR;
 
-            serializedAutomata += SerializeState(automata.GetInitialState()) + newLine;
+            serializedAutomata += SerializeState(automata.GetInitialState()) + NEWLINE_STR;
 
             automata.GetFinalStates().ToList().ForEach(
-                x => serializedAutomata += SerializeState(x) + commaSeparator
+                x => serializedAutomata += SerializeState(x) + COMMA_SEPARATOR_STR
             );
-            serializedAutomata += newLine;
+            serializedAutomata += NEWLINE_STR;
 
             automata.GetTransitions().ToList().ForEach(
-                x => serializedAutomata += SerializeTransition(x) + newLine
+                x => serializedAutomata += SerializeTransition(x) + NEWLINE_STR
             );
-            serializedAutomata += EOF;
+            serializedAutomata += EOF_STR;
 
             return serializedAutomata;
         }
@@ -161,8 +164,8 @@ namespace AutomataCLI.Serialization {
             }
         }
 
-        private static State DeserializeState(String plainText) {
-            return new State(plainText, isFinal: false);
+        private static State DeserializeState(String plainText, String[] finalStates) {
+            return new State(plainText, finalStates.Contains(plainText));
         }
 
         private static String SerializeState(State state) {
@@ -177,9 +180,9 @@ namespace AutomataCLI.Serialization {
             }
 
             return new Transition(
-                automata.GetStateLike(transitionMembers[0]), // stateFrom
-                transitionMembers[1],                        // input
-                automata.GetStateLike(transitionMembers[2])  // stateTo
+                automata.GetStateLike(transitionMembers[0].Trim()), // stateFrom
+                transitionMembers[1].Trim(),                        // input
+                automata.GetStateLike(transitionMembers[2].Trim())  // stateTo
             );
         }
 
