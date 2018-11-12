@@ -235,7 +235,7 @@ namespace AutomataCLI.Struct {
 
             InitialState = state;
         }
-
+        
         private void RefreshFinalStates() {
             FinalStates = States.Where(
                 x => x.IsFinal

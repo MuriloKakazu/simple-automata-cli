@@ -7,28 +7,35 @@ using AutomataCLI;
 
 namespace AutomataCLI.Struct {
     public class AutomataReader {
-
-        public String Input { get; set; }
 	    private Automata Automata {get; set; }
 
 	    // private AutomataWorker[] Workers;
 
-        public Boolean Matches(){
-
+        public AutomataReader(Automata automata){
+            this.Automata = automata;
+        }
+        
+        public Boolean Matches(String input){
+            
             Transition initialTransition = Automata.GetTransitions().ToList().Find(
                 x => (
-                    x.From  == this.Automata.GetInitialState() &&
-                    x.Input == this.Input[0].ToString()
+                    x.From  == this.Automata.GetInitialState() && (
+                        x.Input == input[0].ToString() ||
+                        x.Input == null
+                    )
                 )
             );
+            if(initialTransition == null){
+                return false;
+            }
 
             State firstWorkerState = initialTransition.From;
-
-            /* Workers.add(new AutomataWorker(
-                this.Automata,
-                firstWorkerState
-            )); */
-            return false;
+             
+            try{
+                return new AutomataWorker(this.Automata, firstWorkerState, input.ToCharArray().ToList()).Work().Result;
+            } catch(AggregateException e){
+                throw e.Flatten();
+            }
         }
     }
 }

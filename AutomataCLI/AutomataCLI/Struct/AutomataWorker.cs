@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AutomataCLI.Struct {
     public class AutomataWorker {
@@ -15,44 +17,55 @@ namespace AutomataCLI.Struct {
             this.CurrentState = currentState;
             this.InputSymbols = inputSymbols;
         }
-
-        private Boolean Work(){
-
+        
+        async public Task<Boolean> Work(){
+            
             var possibleTransitions = new List<Transition>();
             var remainingSymbols    = new List<String>(InputSymbols);
 
-            for(int i = 0; i < InputSymbols.Count; i++){
-
-                var currentSymbol = InputSymbols[i];
+            for(int i = 0; i < InputSymbols.Count; i++){   
+                var currentSymbol = InputSymbols[i]; 
                 possibleTransitions = this.Automata.GetTransitions().ToList().Where(
                     x => (
-                        x.Input == currentSymbol &&
-                        x.From  == this.CurrentState
+                        x.From  == this.CurrentState && (
+                            x.Input == currentSymbol.ToString() ||
+                            x.Input == null
+                        )
                     )
                 ).ToList();
 
-                int TransitionsQuantity = possibleTransitions.Count;
+                var transitionsQuantity = possibleTransitions.Count; 
 
-                if(TransitionsQuantity == 0) {
-                    return false;
-                }
+                switch (transitionsQuantity) {
+                    case 0:
+                        return false;
+                    case 1:
+                        this.CurrentState = possibleTransitions[0].To;
+                        this.LastState = possibleTransitions[0].From;
 
-                remainingSymbols.RemoveAt(i);
-                this.CurrentState = possibleTransitions[0].To;
-                this.LastState    = possibleTransitions[0].From;
+                        if (possibleTransitions[0].Input != null) { 
+                            remainingSymbols.RemoveAt(0);
+                        }
+                        break;
+                    default:
+                        if (possibleTransitions[0].Input != null) {
+                            remainingSymbols.RemoveAt(0);
+                        }
 
-                if(TransitionsQuantity >= 1){
-                    summonWorkers(possibleTransitions.GetRange(1, TransitionsQuantity - 1), remainingSymbols);
+                        var cts = new CancellationTokenSource();
+                        Boolean[] results = await SummonWorkers(possibleTransitions, remainingSymbols);
+                        if(results.Any(x => x)){
+                            cts.Cancel();
+                            return true;
+                        }
+                        return false;
                 }
             }
-            return true;
+            return this.Automata.FinalStates.Contains(this.CurrentState);
         }
-        public void summonWorkers(List<Transition> possibleTransitions, List<String> remainingSymbols) {
-
-            foreach(Transition transition in possibleTransitions) {
-                var newWorker = new AutomataWorker(this.Automata, transition.To, remainingSymbols);
-                Boolean result =  newWorker.Work();
-            }
+        public Task<Boolean[]> SummonWorkers(List<Transition> possibleTransitions, List<Char> remainingSymbols) {
+            
+            return Task.WhenAll(possibleTransitions.Select(x => new AutomataWorker(this.Automata, x.To, remainingSymbols).Work()));
         }
     }
 }
