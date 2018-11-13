@@ -53,6 +53,8 @@
     <Compile Include="Struct\AutomataWorker.cs" />
     <Compile Include="Utils\ObjectExtension.cs" />
     <Compile Include="Serialization\AutomataSerializer.cs" />
+    <Compile Include="Exceptions\AutomataException.cs" />
+    <Compile Include="Extensions\AutomataExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

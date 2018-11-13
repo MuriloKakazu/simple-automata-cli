@@ -126,7 +126,7 @@ namespace AutomataCLI.Struct {
         #region state methods
 
         public void AddState(State state) {
-            if (ContainsStateName(state?.Name)) {
+            if (ContainsState(state?.Name)) {
                 throw new AutomataException(
                     AutomataException.MESSAGE_DUPLICATE_STATE, state?.Name
                 );
@@ -159,13 +159,6 @@ namespace AutomataCLI.Struct {
         }
 
         public State GetStateLike(String stateName) {
-            if (!ContainsStateName(stateName)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_STATE_NOT_FOUND,
-                    $"{stateName}"
-                );
-            }
-
             return States.Find(
                 x => x.Name == stateName
             );
@@ -212,15 +205,15 @@ namespace AutomataCLI.Struct {
             AddStates(states);
         }
 
-        public Boolean ContainsStateName(String stateName) {
+        public Boolean ContainsState(String stateName) {
             return States.Exists(
                 x => x.Name == stateName
             );
         }
 
         public Boolean ContainsState(State state) {
-            return States.Exists(
-                x => x == state
+            return ContainsState(
+                state?.Name
             );
         }
 
@@ -280,12 +273,12 @@ namespace AutomataCLI.Struct {
         }
 
         public void AddTransition(String stateFrom, String input, String stateTo) {
-            if (!ContainsStateName(stateFrom)) {
+            if (!ContainsState(stateFrom)) {
                 throw new AutomataException(
                     AutomataException.MESSAGE_STATE_NOT_FOUND, stateFrom
                 );
             }
-            if (!ContainsStateName(stateTo)) {
+            if (!ContainsState(stateTo)) {
                 throw new AutomataException(
                     AutomataException.MESSAGE_STATE_NOT_FOUND, stateTo
                 );
@@ -312,13 +305,6 @@ namespace AutomataCLI.Struct {
         }
 
         public Transition GetTransitionLike(String stateFrom, String input, String stateTo) {
-            if (!ContainsTransition(stateFrom, input, stateTo)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_TRANSITION_NOT_FOUND,
-                    $"({stateFrom}, {input}, {stateTo})"
-                );
-            }
-
             return Transitions.Find(
                 x => x.From.Name == stateFrom &&
                      x.Input     == input     &&
@@ -349,16 +335,18 @@ namespace AutomataCLI.Struct {
 
 
         public Boolean ContainsTransition(Transition transition) {
-            return Transitions.Exists(
-                x => x == transition
+            return ContainsTransition(
+                transition?.From?.Name,
+                transition?.Input,
+                transition?.To?.Name
             );
         }
 
         public Boolean ContainsTransition(State fromState, String input, State toState) {
-            return Transitions.Exists(
-                x => x.From  == fromState &&
-                     x.Input == input     &&
-                     x.To    == toState
+            return ContainsTransition(
+                fromState?.Name,
+                input,
+                toState?.Name
             );
         }
 
