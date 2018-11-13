@@ -3,32 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutomataCLI.Exceptions;
+using AutomataCLI.Extensions;
 
 namespace AutomataCLI.Struct {
     public class Automata {
-        public class AutomataException : Exception {
-            private static String MESSAGE_BASE;
-            public static  String MESSAGE_DUPLICATE_STATE;
-            public static  String MESSAGE_DUPLICATE_TRANSITION;
-            public static  String MESSAGE_STATE_NOT_FOUND;
-            public static  String MESSAGE_SYMBOL_NOT_FOUND;
-            public static  String MESSAGE_TRANSITION_NOT_FOUND;
-
-            // static ctor
-            static AutomataException() {
-                MESSAGE_BASE                 = "Invalid automata.";
-                MESSAGE_DUPLICATE_STATE      = "Duplicate state found:";
-                MESSAGE_DUPLICATE_TRANSITION = "Duplicate transition found:";
-                MESSAGE_STATE_NOT_FOUND      = "Could not find state:";
-                MESSAGE_SYMBOL_NOT_FOUND     = "Could not find symbol:";
-                MESSAGE_TRANSITION_NOT_FOUND = "Could not find transition:";
-            }
-
-            // ctor
-            public AutomataException(String reason, String supplement = "") :
-                base($"{MESSAGE_BASE} {reason} {supplement}") { }
-        }
-
         protected AutomataType AutomataType { get; set; }
         protected List<String> Symbols { get; set; }
         protected List<State> States { get; set; }
@@ -113,9 +92,9 @@ namespace AutomataCLI.Struct {
 
         public void RemoveSymbol(String symbol, Boolean removeDependencies = false) {
             if (removeDependencies) {
-                RemoveTransitions(Transitions.Where(
-                    x => x.Input == symbol
-                ).ToArray());
+                RemoveTransitions(
+                    this.GetTransitionsWithSymbol(symbol).ToArray()
+                );
             }
 
             Symbols.Remove(symbol);
@@ -147,9 +126,9 @@ namespace AutomataCLI.Struct {
         #region state methods
 
         public void AddState(State state) {
-            if (ContainsStateName(state.Name)) {
+            if (ContainsStateName(state?.Name)) {
                 throw new AutomataException(
-                    AutomataException.MESSAGE_DUPLICATE_STATE, state.Name
+                    AutomataException.MESSAGE_DUPLICATE_STATE, state?.Name
                 );
             }
 
@@ -194,9 +173,12 @@ namespace AutomataCLI.Struct {
 
         public void RemoveState(State state, Boolean removeDependencies = false) {
             if (removeDependencies) {
-                RemoveTransitions(Transitions.Where(
-                    x => x.From == state || x.To == state
-                ).ToArray());
+                RemoveTransitions(
+                    this.GetTransitionsFromState(state).ToArray()
+                );
+                RemoveTransitions(
+                    this.GetTransitionsToState(state).ToArray()
+                );
             }
 
             if (InitialState == state) {
@@ -245,7 +227,7 @@ namespace AutomataCLI.Struct {
         public void SetInitialState(State state) {
             if (!ContainsState(state)) {
                 throw new AutomataException(
-                    AutomataException.MESSAGE_STATE_NOT_FOUND, state.Name
+                    AutomataException.MESSAGE_STATE_NOT_FOUND, state?.Name
                 );
             }
 
@@ -267,24 +249,24 @@ namespace AutomataCLI.Struct {
         #region transition methods
 
         public void AddTransition(Transition transition) {
-            if (!ContainsState(transition.From)) {
+            if (!ContainsState(transition?.From)) {
                 throw new AutomataException(
                     AutomataException.MESSAGE_STATE_NOT_FOUND, transition.From?.Name
                 );
             }
-            if (!ContainsState(transition.To)) {
+            if (!ContainsState(transition?.To)) {
                 throw new AutomataException(
                     AutomataException.MESSAGE_STATE_NOT_FOUND, transition.To?.Name
                 );
             }
-            if (!ContainsSymbol(transition.Input)) {
+            if (!ContainsSymbol(transition?.Input)) {
                 throw new AutomataException(
-                    AutomataException.MESSAGE_SYMBOL_NOT_FOUND, transition.Input
+                    AutomataException.MESSAGE_SYMBOL_NOT_FOUND, transition?.Input
                 );
             }
-            if (ContainsTransition(transition.From, transition.Input, transition.To)) {
+            if (ContainsTransition(transition?.From, transition?.Input, transition?.To)) {
                 throw new AutomataException(
-                    AutomataException.MESSAGE_DUPLICATE_TRANSITION, transition.ToString()
+                    AutomataException.MESSAGE_DUPLICATE_TRANSITION, transition?.ToString()
                 );
             }
 
