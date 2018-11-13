@@ -99,7 +99,7 @@ namespace AutomataCLI.Serialization {
                     }
                 );
 
-                if (deserializedAutomata.ContainsStateName(initialState)) {
+                if (deserializedAutomata.ContainsState(initialState)) {
                     deserializedAutomata.SetInitialState(
                         deserializedAutomata.GetStates().ToList().Find(
                             x => x.Name == initialState
