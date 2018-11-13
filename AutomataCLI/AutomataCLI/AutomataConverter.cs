@@ -48,7 +48,7 @@ namespace AutomataCLI {
                         newState = transitions.First().To;
                     }
                     Transition newTransition = new Transition(state, symbol, newState);
-                    if(!automata.ContainsTransition(newTransition.From.Name, symbol, newTransition.To.Name)){
+                    if(!automata.ContainsTransition(newTransition)){
                         automata.AddTransition(newTransition);
                     }
                 }
