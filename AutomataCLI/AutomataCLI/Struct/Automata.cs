@@ -160,7 +160,7 @@ namespace AutomataCLI.Struct {
         public void AddState(String stateName, Boolean isFinal = false) {
             AddState(new State(stateName, isFinal));
         }
-
+        
         public void AddStates(State[] states) {
             states.ToList().ForEach(
                 x => AddState(x)
@@ -343,6 +343,19 @@ namespace AutomataCLI.Struct {
                      x.To.Name   == stateTo
             );
         }
+        public List<Transition> GetTransitionsLike(State stateFrom, String input) {
+            if (!ContainsTransition(stateFrom, input)) {
+                throw new AutomataException(
+                    AutomataException.MESSAGE_TRANSITION_NOT_FOUND,
+                    $"({stateFrom}, {input})"
+                );
+            }
+
+            return Transitions.Where(
+                x => x.From == stateFrom &&
+                     x.Input     == input
+            ).ToList();
+        }
 
         public void RemoveTransition(Transition transition) {
             Transitions.Remove(transition);
@@ -377,6 +390,12 @@ namespace AutomataCLI.Struct {
                 x => x.From  == fromState &&
                      x.Input == input     &&
                      x.To    == toState
+            );
+        }
+        public Boolean ContainsTransition(State fromState, String input) {
+            return Transitions.Exists(
+                x => x.From  == fromState &&
+                     x.Input == input
             );
         }
 
