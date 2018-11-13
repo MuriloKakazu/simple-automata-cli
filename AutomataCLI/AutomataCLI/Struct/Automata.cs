@@ -311,20 +311,6 @@ namespace AutomataCLI.Struct {
                      x.To.Name   == stateTo
             );
         }
-        public List<Transition> GetTransitionsLike(State stateFrom, String input) {
-            if (!ContainsTransition(stateFrom, input)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_TRANSITION_NOT_FOUND,
-                    $"({stateFrom}, {input})"
-                );
-            }
-
-            return Transitions.Where(
-                x => x.From == stateFrom &&
-                     x.Input     == input
-            ).ToList();
-        }
-
         public void RemoveTransition(Transition transition) {
             Transitions.Remove(transition);
         }
@@ -360,12 +346,6 @@ namespace AutomataCLI.Struct {
                 fromState?.Name,
                 input,
                 toState?.Name
-            );
-        }
-        public Boolean ContainsTransition(State fromState, String input) {
-            return Transitions.Exists(
-                x => x.From  == fromState &&
-                     x.Input == input
             );
         }
 

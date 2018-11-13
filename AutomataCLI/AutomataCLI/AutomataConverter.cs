@@ -4,6 +4,7 @@ using AutomataCLI.Struct;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AutomataCLI.Extensions;
 
 namespace AutomataCLI {
     public class AutomataConverter{
@@ -32,7 +33,7 @@ namespace AutomataCLI {
             List<State> newStates = new List<State>();
             foreach (State state in states) {
                 foreach (String symbol in automata.GetSymbols()) {
-                    var transitions = automata.GetTransitionsLike(state, symbol);
+                    var transitions = automata.GetTransitionsFromState(state, symbol).ToList();
 
                     if (transitions.Count == 0) continue;
 

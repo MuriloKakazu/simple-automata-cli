@@ -14,9 +14,5 @@ namespace AutomataCLI.Struct {
             
             SetGroupedStates(groupedStates);
         }
-
-        public override String ToString()
-            //=> $"{Name} <{(IsFinal ? "Final" : "Not Final")}>";
-            => $"{Name}";
     }
 }
