@@ -71,9 +71,9 @@ namespace AutomataCLI {
             Console.WriteLine(automata);
             Console.WriteLine("---------------------------------------------------------------------------");
             Console.WriteLine(AutomataConverter.ToNFA(automata));
-            //Console.WriteLine($"Execution time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
+            //Console.WriteLine($"Execution time: {watch.Elapsed.TotalMilliseconds.ToString()}ms")
 
-            /*
+            // MUST SUCCEED TEST
             Console.WriteLine("Test 2:");
 
             watch.Reset();
@@ -106,7 +106,7 @@ namespace AutomataCLI {
             Console.WriteLine(automata2);
             Console.WriteLine($"Deserialization time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
 
-            // FAIL test
+            // MUST FAIL TEST
             Console.WriteLine("Test 3:");
 
             watch.Reset();
