@@ -7,92 +7,56 @@ using System.Linq;
 
 namespace AutomataCLI {
     public class AutomataConverter{
-        public class AutomataConverterException : Exception
-        {
+        public class AutomataConverterException : Exception {
             const String MESSAGE_BASE = "Invalid conversion. ";
             public AutomataConverterException(String supplement) : base($"{MESSAGE_BASE}{supplement}") { }
         }
-        public static Automata ToNFA(Automata convertedAutomata){
+        public static Automata ToNFA(Automata convertedAutomata) {
             
             if(convertedAutomata.GetAutomataType() == AutomataType.AFN){
                 return convertedAutomata;
             }
-            
+
             var newAutomata = new Automata();
             newAutomata.AddSymbols(convertedAutomata.GetSymbols());
             newAutomata.AddStates(convertedAutomata.GetStates());
+            newAutomata.AddTransitions(convertedAutomata.GetTransitions());
 
-            // var newStates = new List<GroupedState>();
-            // foreach (State state in newAutomata.GetStates()){
-            //     foreach (String symbol in newAutomata.GetSymbols()) {
-
-            //         var transitions = convertedAutomata.GetTransitionsLike(state, symbol);
-
-            //         switch (transitions.Count) {
-            //             case 0: break;
-            //             case 1:
-            //                 newAutomata.AddTransition(transitions.First());
-            //                 break;
-            //             default:
-            //                 var newGroupedState = new GroupedState(
-            //                     transitions.Select(x => x.To).ToList()
-            //                 );
-
-            //                 if (!newAutomata.ContainsStateName(newGroupedState.Name))
-            //                 {
-            //                     newAutomata.AddState(newGroupedState);
-            //                     newStates.Add(newGroupedState);
-            //                 }
-
-            //                 newAutomata.AddTransition(new Transition(
-            //                     state,
-            //                     symbol,
-            //                     newGroupedState
-            //                 ));
-            //                 break;
-            //         }
-            //     }
-            // }
-
-            // var hasNewStates = newStates.Count != 0;
-
-            // while(hasNewStates) {
-            //     foreach (State state in newStates) {
-            //         foreach (String symbol in newAutomata.GetSymbols()) {
-
-            //             var transitions = convertedAutomata.GetTransitionsLike(state, symbol);
-
-            //             switch (transitions.Count)
-            //             {
-            //                 case 0: break;
-            //                 case 1:
-            //                     newAutomata.AddTransition(transitions.First());
-            //                     break;
-            //                 default:
-            //                     var newGroupedState = new GroupedState(
-            //                         transitions.Select(x => x.To).ToList()
-            //                     );
-
-            //                     if (!newAutomata.ContainsStateName(newGroupedState.Name)) {
-            //                         newAutomata.AddState(newGroupedState);
-            //                         newStates.Add(newGroupedState);
-            //                     }
-
-            //                     newAutomata.AddTransition(new Transition(
-            //                         state,
-            //                         symbol,
-            //                         newGroupedState
-            //                     ));
-            //                     break;
-            //             }
-            //         }
-            //     }
-            // }
+            ConvertStatesToDFA(newAutomata, newAutomata.GetStates().ToList());
             
-            return new Automata();
+            return newAutomata;
         }
-        public static Automata ToNFAe(){
-            return new Automata();
+
+        public static void ConvertStatesToDFA(Automata automata, List<State> states) {
+
+            List<State> newStates = new List<State>();
+            foreach (State state in states) {
+                foreach (String symbol in automata.GetSymbols()) {
+                    var transitions = automata.GetTransitionsLike(state, symbol);
+
+                    if (transitions.Count == 0) continue;
+
+                    State newState;
+                    if (transitions.Count > 1) {
+                        newState = new GroupedState(transitions.Select(t => t.To).ToList());
+                        if(!automata.ContainsState(newState)){
+                            newStates.Add(newState);
+                            automata.AddState(newState);
+                        }
+                    } else {
+                        newState = transitions.First().To;
+                    }
+                    Transition newTransition = new Transition(state, symbol, newState);
+                    if(!automata.ContainsTransition(newTransition.From.Name, symbol, newTransition.To.Name)){
+                        automata.AddTransition(newTransition);
+                    }
+                }
+            }
+
+            if(newStates.Count != 0){
+                ConvertStatesToDFA(automata, newStates);
+            }
+            return;
         }
     }
 }

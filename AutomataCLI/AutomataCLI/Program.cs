@@ -23,6 +23,8 @@ namespace AutomataCLI {
                 "1", "2", "3", "@"
             });
 
+            automata.SetAutomataType(AutomataType.AFNe);
+
             State state0 = new State("Q0", false),
                   state1 = new State("Q1", false),
                   state2 = new State("Q2", true),
@@ -66,9 +68,12 @@ namespace AutomataCLI {
             watch.Start();
             Console.WriteLine(new AutomataReader(automata).Matches(input));
             watch.Stop();
-            Console.WriteLine($"Execution time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
+            Console.WriteLine(automata);
+            Console.WriteLine("---------------------------------------------------------------------------");
+            Console.WriteLine(AutomataConverter.ToNFA(automata));
+            //Console.WriteLine($"Execution time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
 
-
+            /*
             Console.WriteLine("Test 2:");
 
             watch.Reset();
@@ -133,7 +138,7 @@ namespace AutomataCLI {
             Console.WriteLine("Deserialized Automata:");
             Console.WriteLine(automata3);
             Console.WriteLine($"Deserialization time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
-
+            */
             Console.ReadKey();
         }
     }

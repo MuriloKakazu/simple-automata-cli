@@ -47,7 +47,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Struct\Automata.cs" />
     <Compile Include="Struct\AutomataType.cs" />
+    <Compile Include="AutomataConverter.cs" />
     <Compile Include="Struct\State.cs" />
+    <Compile Include="Struct\GroupedState.cs" />
     <Compile Include="Struct\Transition.cs" />
     <Compile Include="Struct\AutomataReader.cs" />
     <Compile Include="Struct\AutomataWorker.cs" />
