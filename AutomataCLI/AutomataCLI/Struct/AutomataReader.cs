@@ -34,8 +34,8 @@ namespace AutomataCLI.Struct {
             try{
                 return new AutomataWorker(this.Automata, firstWorkerState, 
                     input.Select(x => x.ToString()).ToList()).Work().Result;
-            } catch(AggregateException e){
-                throw e.Flatten();
+            } catch(StackOverflowException e){
+                return false;
             }
         }
     }

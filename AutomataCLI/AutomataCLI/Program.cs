@@ -15,14 +15,12 @@ namespace AutomataCLI {
 
             Console.WriteLine("Test 1:");
 
-            watch.Start();
-
             Automata automata = new Automata();
 
-            String input = "123";
+            String input = "1";
 
             automata.SetSymbols(new String[] {
-                "1", "2", "3"
+                "1", "2", "3", "@"
             });
 
             State state0 = new State("Q0", false),
@@ -45,6 +43,7 @@ namespace AutomataCLI {
                 new Transition(state0, "1", state0),
                 new Transition(state0, "2", state0),
                 new Transition(state0, "3", state0),
+                new Transition(state0, "@", state0),
                 new Transition(state0, "1", state1),
                 new Transition(state0, "2", state3),
                 new Transition(state0, "3", state4),
@@ -64,7 +63,7 @@ namespace AutomataCLI {
                 new Transition(state4, "3", state4),
                 new Transition(state4, "3", state2),
             });
-
+            watch.Start();
             Console.WriteLine(new AutomataReader(automata).Matches(input));
             watch.Stop();
             Console.WriteLine($"Execution time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
