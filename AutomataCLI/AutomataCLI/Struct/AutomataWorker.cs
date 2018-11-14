@@ -29,7 +29,7 @@ namespace AutomataCLI.Struct {
                     x => (
                         x.From  == this.CurrentState && (
                             x.Input == currentSymbol.ToString() ||
-                            x.Input == null
+                            x.Input == "@"
                         )
                     )
                 ).ToList();
@@ -43,20 +43,25 @@ namespace AutomataCLI.Struct {
                         this.CurrentState = possibleTransitions[0].To;
                         this.LastState = possibleTransitions[0].From;
 
-                        if (possibleTransitions[0].Input != null) { 
+                        if (possibleTransitions[0].Input != "@") { 
                             remainingSymbols.RemoveAt(0);
                         }
                         break;
                     default:
-                        if (possibleTransitions[0].Input != null) {
+                        if (possibleTransitions[0].Input != "@") {
                             remainingSymbols.RemoveAt(0);
                         }
 
                         var cts = new CancellationTokenSource();
-                        Boolean[] results = await SummonWorkers(possibleTransitions, remainingSymbols);
-                        if(results.Any(x => x)){
+                        Boolean[] results;
+                        try{
+                            results = await SummonWorkers(possibleTransitions, remainingSymbols);
+                            if (results.Any(x => x)) {
+                                cts.Cancel();
+                                return true;
+                            }
+                        } catch(StackOverflowException e){
                             cts.Cancel();
-                            return true;
                         }
                         return false;
                 }
@@ -64,8 +69,12 @@ namespace AutomataCLI.Struct {
             return this.Automata.GetFinalStates().Contains(this.CurrentState);
         }
         public Task<Boolean[]> SummonWorkers(List<Transition> possibleTransitions, List<String> remainingSymbols) {
-            
-            return Task.WhenAll(possibleTransitions.Select(x => new AutomataWorker(this.Automata, x.To, remainingSymbols).Work()));
+            try{
+                return Task.WhenAll(possibleTransitions.Select(x => new AutomataWorker(this.Automata, x.To, remainingSymbols).Work()));
+            } catch(StackOverflowException e){
+                return new Task<Boolean[]>(() => getFalseResult());
+            }
         }
+        public Boolean[] getFalseResult() => new Boolean[]{false};
     }
 }
