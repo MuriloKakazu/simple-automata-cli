@@ -8,6 +8,12 @@ using AutomataCLI.Extensions;
 
 namespace AutomataCLI.Struct {
     public class Automata {
+        public static String SYMBOL_SPONTANEOUS_TRANSITION;
+
+        static Automata() {
+            SYMBOL_SPONTANEOUS_TRANSITION = "@";
+        }
+
         protected AutomataType AutomataType { get; set; }
         protected List<String> Symbols { get; set; }
         protected List<State> States { get; set; }
@@ -77,6 +83,17 @@ namespace AutomataCLI.Struct {
         #region symbol methods
 
         public void AddSymbol(String symbol) {
+            if (symbol == null) {
+                throw new InvalidValueException(
+                    symbol
+                );
+            }
+            if (ContainsSymbol(symbol)) {
+                throw new DuplicateValueException(
+                    symbol
+                );
+            }
+
             Symbols.Add(symbol.Trim());
         }
 
@@ -118,7 +135,10 @@ namespace AutomataCLI.Struct {
         }
 
         public void ClearSymbols(Boolean removeDependencies = false) {
-            RemoveSymbols(Symbols.ToArray(), removeDependencies);
+            RemoveSymbols(
+                GetSymbols(),
+                removeDependencies
+            );
         }
 
         #endregion
@@ -126,9 +146,17 @@ namespace AutomataCLI.Struct {
         #region state methods
 
         public void AddState(State state) {
+
+            if (state == null) {
+                throw new InvalidValueException(
+                    state,
+                    typeof(State)
+                );
+            }
             if (ContainsState(state?.Name)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_DUPLICATE_STATE, state?.Name
+                throw new DuplicateValueException(
+                    state?.Name,
+                    typeof(State)
                 );
             }
 
@@ -137,7 +165,9 @@ namespace AutomataCLI.Struct {
         }
 
         public void AddState(String stateName, Boolean isFinal = false) {
-            AddState(new State(stateName, isFinal));
+            AddState(new State(
+                stateName, isFinal
+            ));
         }
 
         public void AddStates(State[] states) {
@@ -158,6 +188,12 @@ namespace AutomataCLI.Struct {
             return InitialState;
         }
 
+        public State GetStateLike(State state) {
+            return GetStateLike(
+                state?.Name
+            );
+        }
+
         public State GetStateLike(String stateName) {
             return States.Find(
                 x => x.Name == stateName
@@ -165,6 +201,8 @@ namespace AutomataCLI.Struct {
         }
 
         public void RemoveState(State state, Boolean removeDependencies = false) {
+            state = GetStateLike(state);
+
             if (removeDependencies) {
                 RemoveTransitions(
                     this.GetTransitionsFromState(state).ToArray()
@@ -183,9 +221,10 @@ namespace AutomataCLI.Struct {
         }
 
         public void RemoveState(String stateName, Boolean removeDependencies = false) {
-            RemoveState(States.Find(
-                x => x.Name == stateName
-            ), removeDependencies);
+            RemoveState(
+                new State(stateName),
+                removeDependencies
+            );
         }
 
         public void RemoveStates(State[] states, Boolean removeDependencies = false) {
@@ -219,12 +258,13 @@ namespace AutomataCLI.Struct {
 
         public void SetInitialState(State state) {
             if (!ContainsState(state)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_STATE_NOT_FOUND, state?.Name
+                throw new InvalidValueException(
+                    state?.Name,
+                    typeof(State)
                 );
             }
 
-            InitialState = state;
+            InitialState = GetStateLike(state);
         }
 
         private void RefreshFinalStates() {
@@ -234,7 +274,7 @@ namespace AutomataCLI.Struct {
         }
 
         public void ClearStates(Boolean removeDependencies = false) {
-            RemoveStates(States.ToArray());
+            RemoveStates(GetStates());
         }
 
         #endregion
@@ -242,24 +282,33 @@ namespace AutomataCLI.Struct {
         #region transition methods
 
         public void AddTransition(Transition transition) {
+            if (transition == null) {
+                throw new InvalidValueException(
+                    transition,
+                    typeof(Transition)
+                );
+            }
             if (!ContainsState(transition?.From)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_STATE_NOT_FOUND, transition.From?.Name
+                throw new InvalidValueException(
+                    transition?.From?.Name,
+                    typeof(State)
                 );
             }
             if (!ContainsState(transition?.To)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_STATE_NOT_FOUND, transition.To?.Name
+                throw new InvalidValueException(
+                    transition?.To?.Name,
+                    typeof(State)
                 );
             }
             if (!ContainsSymbol(transition?.Input)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_SYMBOL_NOT_FOUND, transition?.Input
+                throw new InvalidValueException(
+                    transition?.Input
                 );
             }
             if (ContainsTransition(transition?.From, transition?.Input, transition?.To)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_DUPLICATE_TRANSITION, transition?.ToString()
+                throw new DuplicateValueException(
+                    transition?.ToString(),
+                    typeof(Transition)
                 );
             }
 
@@ -274,23 +323,22 @@ namespace AutomataCLI.Struct {
 
         public void AddTransition(String stateFrom, String input, String stateTo) {
             if (!ContainsState(stateFrom)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_STATE_NOT_FOUND, stateFrom
+                throw new InvalidValueException(
+                    stateFrom,
+                    typeof(State)
                 );
             }
             if (!ContainsState(stateTo)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_STATE_NOT_FOUND, stateTo
+                throw new InvalidValueException(
+                    stateTo,
+                    typeof(State)
                 );
             }
 
             AddTransition(
-                States.Find(
-                    x => x.Name == stateFrom
-                ), input,
-                States.Find(
-                    x => x.Name == stateTo
-                )
+                GetStateLike(stateFrom),
+                input,
+                GetStateLike(stateTo)
             );
         }
 
@@ -304,6 +352,22 @@ namespace AutomataCLI.Struct {
             return Transitions.ToArray();
         }
 
+        public Transition GetTransitionLike(Transition transition) {
+            return GetTransitionLike(
+                transition?.From?.Name,
+                transition?.Input,
+                transition?.To?.Name
+            );
+        }
+
+        public Transition GetTransitionLike(State stateFrom, String input, State stateTo) {
+            return GetTransitionLike(
+                stateFrom?.Name,
+                input,
+                stateTo?.Name
+            );
+        }
+
         public Transition GetTransitionLike(String stateFrom, String input, String stateTo) {
             return Transitions.Find(
                 x => x.From.Name == stateFrom &&
@@ -313,12 +377,14 @@ namespace AutomataCLI.Struct {
         }
 
         public void RemoveTransition(Transition transition) {
-            Transitions.Remove(transition);
+            Transitions.Remove(
+                GetTransitionLike(transition)
+            );
         }
 
         public void RemoveTransition(State fromState, String input, State toState) {
-            RemoveTransition(Transitions.Find(
-                x => x.From == fromState && x.Input == input && x.To == toState
+            RemoveTransition(new Transition(
+                fromState, input, toState
             ));
         }
 
@@ -332,7 +398,6 @@ namespace AutomataCLI.Struct {
             ClearTransitions();
             AddTransitions(transitions);
         }
-
 
         public Boolean ContainsTransition(Transition transition) {
             return ContainsTransition(
@@ -359,7 +424,7 @@ namespace AutomataCLI.Struct {
         }
 
         public void ClearTransitions() {
-            RemoveTransitions(Transitions.ToArray());
+            RemoveTransitions(GetTransitions());
         }
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutomataCLI.Exceptions;
+using AutomataCLI.Utils;
 
 namespace AutomataCLI.Struct {
     public class State {
@@ -11,11 +12,12 @@ namespace AutomataCLI.Struct {
             => new State("Empty");
 
         public State(String name, Boolean isFinal = false) {
-            if (String.IsNullOrWhiteSpace(name)) {
-                throw new AutomataException(
-                    AutomataException.MESSAGE_INVALID_STATE, $"Name: {name}"
-                );
-            }
+            ValidationUtils.EnsureNotNullEmptyOrWhitespace(
+                name, new InvalidValueException(
+                    $"State name: \"{name}\""
+                )
+            );
+
             this.Name    = name.Trim();
             this.IsFinal = isFinal;
         }
