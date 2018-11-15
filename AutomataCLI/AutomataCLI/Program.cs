@@ -138,7 +138,6 @@ namespace AutomataCLI {
             Console.WriteLine("Deserialized Automata:");
             Console.WriteLine(automata3);
             Console.WriteLine($"Deserialization time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
-            */
             Console.ReadKey();
         }
     }

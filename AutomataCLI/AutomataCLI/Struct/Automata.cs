@@ -52,7 +52,7 @@ namespace AutomataCLI.Struct {
             String type           = tab + AutomataType.ToString();
             String states         = "";
             String symbols        = "";
-            String initialState   = tab + InitialState.ToString();
+            String initialState   = tab + InitialState?.ToString();
             String finalStates    = "";
             String transitions    = "";
 
