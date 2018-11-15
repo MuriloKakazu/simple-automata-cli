@@ -312,6 +312,7 @@ namespace AutomataCLI.Struct {
                      x.To.Name   == stateTo
             );
         }
+
         public void RemoveTransition(Transition transition) {
             Transitions.Remove(
                 GetTransitionLike(transition)
@@ -321,6 +322,14 @@ namespace AutomataCLI.Struct {
         public void RemoveTransition(State fromState, String input, State toState) {
             RemoveTransition(new Transition(
                 fromState, input, toState
+            ));
+        }
+
+        public void RemoveTransition(String fromState, String input, String toState) {
+            RemoveTransition(new Transition(
+                GetStateLike(fromState),
+                input,
+                GetStateLike(toState)
             ));
         }
 
