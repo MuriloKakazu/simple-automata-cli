@@ -150,7 +150,7 @@ namespace AutomataCLI.Struct {
                 stateName, isFinal
             ));
         }
-
+        
         public void AddStates(State[] states) {
             states.ToList().ForEach(
                 x => AddState(x)
@@ -312,7 +312,6 @@ namespace AutomataCLI.Struct {
                      x.To.Name   == stateTo
             );
         }
-
         public void RemoveTransition(Transition transition) {
             Transitions.Remove(
                 GetTransitionLike(transition)
