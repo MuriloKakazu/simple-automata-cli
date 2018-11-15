@@ -100,7 +100,7 @@ namespace AutomataCLI.Extensions {
             }
         }
 
-        public static void EnsureSymbolNotDuplicate(this Automata automata, String symbol) {
+        public static void EnsureNotContainsSymbol(this Automata automata, String symbol) {
             if (automata.ContainsSymbol(symbol)) {
                 throw new DuplicateValueException(
                     symbol
@@ -108,11 +108,11 @@ namespace AutomataCLI.Extensions {
             }
         }
 
-        public static void EnsureStateNotDuplicate(this Automata automata, State state) {
-            automata.EnsureStateNotDuplicate(state?.Name);
+        public static void EnsureNotContainsState(this Automata automata, State state) {
+            automata.EnsureNotContainsState(state?.Name);
         }
 
-        public static void EnsureStateNotDuplicate(this Automata automata, String state) {
+        public static void EnsureNotContainsState(this Automata automata, String state) {
             if (automata.ContainsState(state)) {
                 throw new DuplicateValueException(
                     state,
@@ -121,15 +121,15 @@ namespace AutomataCLI.Extensions {
             }
         }
 
-        public static void EnsureTransitionNotDuplicate(this Automata automata, Transition transition) {
+        public static void EnsureNotContainsTransition(this Automata automata, Transition transition) {
             automata.EnsureTransitionNotDuplicate(transition?.From, transition?.Input, transition?.To);
         }
 
         public static void EnsureTransitionNotDuplicate(this Automata automata, State stateFrom, String input, State stateTo) {
-            automata.EnsureTransitionNotDuplicate(stateFrom?.Name, input, stateTo?.Name);
+            automata.EnsureNotContainsTransition(stateFrom?.Name, input, stateTo?.Name);
         }
 
-        public static void EnsureTransitionNotDuplicate(this Automata automata, String stateFrom, String input, String stateTo) {
+        public static void EnsureNotContainsTransition(this Automata automata, String stateFrom, String input, String stateTo) {
             if (automata.ContainsTransition(stateFrom, input, stateTo)) {
                 throw new DuplicateValueException(
                     $"({stateFrom}, {input}, {stateTo})",

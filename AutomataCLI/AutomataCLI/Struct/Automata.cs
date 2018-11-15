@@ -84,7 +84,7 @@ namespace AutomataCLI.Struct {
 
         public void AddSymbol(String symbol) {
             this.EnsureSymbolIsValid(symbol);
-            this.EnsureSymbolNotDuplicate(symbol);
+            this.EnsureNotContainsSymbol(symbol);
 
             Symbols.Add(symbol.Trim());
         }
@@ -139,7 +139,7 @@ namespace AutomataCLI.Struct {
 
         public void AddState(State state) {
             this.EnsureStateIsValid(state);
-            this.EnsureStateNotDuplicate(state);
+            this.EnsureNotContainsState(state);
 
             States.Add(state);
             RefreshFinalStates();
@@ -150,7 +150,7 @@ namespace AutomataCLI.Struct {
                 stateName, isFinal
             ));
         }
-        
+
         public void AddStates(State[] states) {
             states.ToList().ForEach(
                 x => AddState(x)
@@ -260,7 +260,7 @@ namespace AutomataCLI.Struct {
 
         public void AddTransition(Transition transition) {
             this.EnsureTransitionIsValid(transition);
-            this.EnsureTransitionNotDuplicate(transition);
+            this.EnsureNotContainsTransition(transition);
 
             Transitions.Add(transition);
         }
