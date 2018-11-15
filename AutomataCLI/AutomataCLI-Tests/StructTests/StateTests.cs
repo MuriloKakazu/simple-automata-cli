@@ -23,7 +23,7 @@ namespace AutomataCLI_Tests.StructTests {
         }
 
         [TestMethod]
-        [ExpectedException(typeof(AutomataException))]
+        [ExpectedException(typeof(InvalidValueException))]
         public void TestCreateInvalidState() {
             State state = new State(null);
         }

@@ -38,7 +38,7 @@ namespace AutomataCLI_Tests.StructTests {
         }
 
         [TestMethod]
-        [ExpectedException(typeof(AutomataException))]
+        [ExpectedException(typeof(InvalidValueException))]
         public void TestCreateInvalidTransition_FromStateNull() {
             State  stateTo   = new State("sampleState1");
             String input     = "@";
@@ -49,7 +49,7 @@ namespace AutomataCLI_Tests.StructTests {
         }
 
         [TestMethod]
-        [ExpectedException(typeof(AutomataException))]
+        [ExpectedException(typeof(InvalidValueException))]
         public void TestCreateInvalidTransition_ToStateNull() {
             State  stateFrom = new State("sampleState0");
             String input     = "@";
@@ -60,7 +60,7 @@ namespace AutomataCLI_Tests.StructTests {
         }
 
         [TestMethod]
-        [ExpectedException(typeof(AutomataException))]
+        [ExpectedException(typeof(InvalidValueException))]
         public void TestCreateInvalidTransition_InputNull() {
             State stateFrom = new State("sampleState0");
             State stateTo   = new State("sampleState1");
