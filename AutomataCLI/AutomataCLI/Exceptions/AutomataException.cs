@@ -2,11 +2,6 @@ using System;
 
 namespace AutomataCLI.Exceptions {
     public class AutomataException : Exception {
-        public new String Message
-            => $"{Title}{(String.IsNullOrWhiteSpace(Supplement) ? "." : $": {Supplement}.")}";
-        public String Title { get; protected set; }
-        public String Supplement { get; protected set; }
-
         protected static String DEFAULT_TITLE;
 
         static AutomataException() {
@@ -23,7 +18,7 @@ namespace AutomataCLI.Exceptions {
             // SUPPLEMENT_VALUE_IS_NULL = "Value is null.";
         }
 
-        public AutomataException(String title = "", Object supplement = null, Type targetType = null) {
+        static String FormatException(String title, Object supplement, Type targetType) {
             if (String.IsNullOrWhiteSpace(title)) {
                 title = DEFAULT_TITLE;
             }
@@ -33,11 +28,14 @@ namespace AutomataCLI.Exceptions {
             }
 
             if (targetType == null) {
-                targetType = supplement.GetType();
+                targetType = supplement?.GetType();
             }
 
-            Title = title;
-            Supplement = $"{supplement.ToString()} ({targetType.Name}).";
+            supplement = $"{supplement?.ToString()} ({targetType?.Name}).";
+            return $"{title}{(String.IsNullOrWhiteSpace(supplement?.ToString()) ? "." : $": {supplement}.")}";
         }
+
+        public AutomataException(String title = "", Object supplement = null, Type targetType = null) :
+            base(FormatException(title, supplement, targetType)) {}
     }
 }

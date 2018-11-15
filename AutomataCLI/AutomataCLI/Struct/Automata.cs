@@ -83,16 +83,8 @@ namespace AutomataCLI.Struct {
         #region symbol methods
 
         public void AddSymbol(String symbol) {
-            if (symbol == null) {
-                throw new InvalidValueException(
-                    symbol
-                );
-            }
-            if (ContainsSymbol(symbol)) {
-                throw new DuplicateValueException(
-                    symbol
-                );
-            }
+            this.EnsureSymbolIsValid(symbol);
+            this.EnsureSymbolNotDuplicate(symbol);
 
             Symbols.Add(symbol.Trim());
         }
@@ -146,19 +138,8 @@ namespace AutomataCLI.Struct {
         #region state methods
 
         public void AddState(State state) {
-
-            if (state == null) {
-                throw new InvalidValueException(
-                    state,
-                    typeof(State)
-                );
-            }
-            if (ContainsState(state?.Name)) {
-                throw new DuplicateValueException(
-                    state?.Name,
-                    typeof(State)
-                );
-            }
+            this.EnsureStateIsValid(state);
+            this.EnsureStateNotDuplicate(state);
 
             States.Add(state);
             RefreshFinalStates();
@@ -257,12 +238,8 @@ namespace AutomataCLI.Struct {
         }
 
         public void SetInitialState(State state) {
-            if (!ContainsState(state)) {
-                throw new InvalidValueException(
-                    state?.Name,
-                    typeof(State)
-                );
-            }
+            this.EnsureStateIsValid(state);
+            this.EnsureContainsState(state);
 
             InitialState = GetStateLike(state);
         }
@@ -282,35 +259,8 @@ namespace AutomataCLI.Struct {
         #region transition methods
 
         public void AddTransition(Transition transition) {
-            if (transition == null) {
-                throw new InvalidValueException(
-                    transition,
-                    typeof(Transition)
-                );
-            }
-            if (!ContainsState(transition?.From)) {
-                throw new InvalidValueException(
-                    transition?.From?.Name,
-                    typeof(State)
-                );
-            }
-            if (!ContainsState(transition?.To)) {
-                throw new InvalidValueException(
-                    transition?.To?.Name,
-                    typeof(State)
-                );
-            }
-            if (!ContainsSymbol(transition?.Input)) {
-                throw new InvalidValueException(
-                    transition?.Input
-                );
-            }
-            if (ContainsTransition(transition?.From, transition?.Input, transition?.To)) {
-                throw new DuplicateValueException(
-                    transition?.ToString(),
-                    typeof(Transition)
-                );
-            }
+            this.EnsureTransitionIsValid(transition);
+            this.EnsureTransitionNotDuplicate(transition);
 
             Transitions.Add(transition);
         }
@@ -322,19 +272,6 @@ namespace AutomataCLI.Struct {
         }
 
         public void AddTransition(String stateFrom, String input, String stateTo) {
-            if (!ContainsState(stateFrom)) {
-                throw new InvalidValueException(
-                    stateFrom,
-                    typeof(State)
-                );
-            }
-            if (!ContainsState(stateTo)) {
-                throw new InvalidValueException(
-                    stateTo,
-                    typeof(State)
-                );
-            }
-
             AddTransition(
                 GetStateLike(stateFrom),
                 input,

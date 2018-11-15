@@ -124,7 +124,7 @@ namespace AutomataCLI {
             Automata automata3 = null;
 
             try {
-                automata3 = AutomataSerializer.Deserialize(input3);
+                automata3 = AutomataSerializer.Deserialize(input3, displayDebug: true);
             } catch (Exception e) {
                 Console.WriteLine(e.Message);
             }
