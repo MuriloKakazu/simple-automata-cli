@@ -406,6 +406,7 @@ namespace AutomataCLI_Tests.StructTests {
             };
 
             automata.SetStates(states);
+            automata.SetInitialState(states[0]);
 
             Assert.IsTrue(states.Length == automata.GetStates().Length);
 
@@ -413,13 +414,7 @@ namespace AutomataCLI_Tests.StructTests {
                 Assert.IsTrue(automata.ContainsState(x));
             }
 
-            automata.ClearStates();
-
-            Assert.AreEqual(0, automata.GetStates().Length);
-
-            foreach (var x in states) {
-                Assert.IsFalse(automata.ContainsState(x));
-            }
+            Assert.IsTrue(states[0] == automata.GetInitialState());
         }
 
         [TestMethod]
