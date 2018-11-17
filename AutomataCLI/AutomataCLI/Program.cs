@@ -128,7 +128,7 @@ namespace AutomataCLI {
             Automata automata3 = null;
 
             try {
-                automata3 = AutomataSerializer.Deserialize(input3);
+                automata3 = AutomataSerializer.Deserialize(input3, displayDebug: true);
             } catch (Exception e) {
                 Console.WriteLine(e.Message);
             }
@@ -138,7 +138,6 @@ namespace AutomataCLI {
             Console.WriteLine("Deserialized Automata:");
             Console.WriteLine(automata3);
             Console.WriteLine($"Deserialization time: {watch.Elapsed.TotalMilliseconds.ToString()}ms");
-            */
             Console.ReadKey();
         }
     }
