@@ -17,24 +17,24 @@ namespace AutomataCLI.Struct {
             this.CurrentState = currentState;
             this.InputSymbols = inputSymbols;
         }
-        
+
         async public Task<Boolean> Work(){
-            
+
             var possibleTransitions = new List<Transition>();
             var remainingSymbols    = new List<String>(InputSymbols);
 
-            for(int i = 0; i < InputSymbols.Count; i++){   
-                var currentSymbol = InputSymbols[i]; 
+            for(int i = 0; i < InputSymbols.Count; i++){
+                var currentSymbol = InputSymbols[i];
                 possibleTransitions = this.Automata.GetTransitions().ToList().Where(
                     x => (
                         x.From  == this.CurrentState && (
                             x.Input == currentSymbol.ToString() ||
-                            x.Input == "@"
+                            x.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION
                         )
                     )
                 ).ToList();
 
-                var transitionsQuantity = possibleTransitions.Count; 
+                var transitionsQuantity = possibleTransitions.Count;
 
                 switch (transitionsQuantity) {
                     case 0:
@@ -43,12 +43,12 @@ namespace AutomataCLI.Struct {
                         this.CurrentState = possibleTransitions[0].To;
                         this.LastState = possibleTransitions[0].From;
 
-                        if (possibleTransitions[0].Input != "@") { 
+                        if (possibleTransitions[0].Input != Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
                             remainingSymbols.RemoveAt(0);
                         }
                         break;
                     default:
-                        if (possibleTransitions[0].Input != "@") {
+                        if (possibleTransitions[0].Input != Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
                             remainingSymbols.RemoveAt(0);
                         }
 

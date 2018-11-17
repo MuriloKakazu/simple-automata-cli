@@ -10,7 +10,7 @@ namespace AutomataCLI_Tests.StructTests {
         public void TestCreateValidTransition() {
             State  stateFrom = new State("sampleState0");
             State  stateTo   = new State("sampleState1");
-            String input     = "@";
+            String input     = Automata.SYMBOL_SPONTANEOUS_TRANSITION;
 
             Transition transition = new Transition(
                 stateFrom, input, stateTo
@@ -25,7 +25,7 @@ namespace AutomataCLI_Tests.StructTests {
         public void TestCreateValidTransition_SameStates() {
             State stateFrom = new State("sampleState0");
             State stateTo   = stateFrom;
-            String input    = "@";
+            String input    = Automata.SYMBOL_SPONTANEOUS_TRANSITION;
 
             Transition transition = new Transition(
                 stateFrom, input, stateTo
@@ -41,7 +41,7 @@ namespace AutomataCLI_Tests.StructTests {
         [ExpectedException(typeof(InvalidValueException))]
         public void TestCreateInvalidTransition_FromStateNull() {
             State  stateTo   = new State("sampleState1");
-            String input     = "@";
+            String input     = Automata.SYMBOL_SPONTANEOUS_TRANSITION;
 
             Transition transition = new Transition(
                 null, input, stateTo
@@ -52,7 +52,7 @@ namespace AutomataCLI_Tests.StructTests {
         [ExpectedException(typeof(InvalidValueException))]
         public void TestCreateInvalidTransition_ToStateNull() {
             State  stateFrom = new State("sampleState0");
-            String input     = "@";
+            String input     = Automata.SYMBOL_SPONTANEOUS_TRANSITION;
 
             Transition transition = new Transition(
                 stateFrom, input, null
