@@ -20,7 +20,7 @@ namespace AutomataCLI {
             String input = "1";
 
             automata.SetSymbols(new String[] {
-                "1", "2", "3", "@"
+                "1", "2", "3", Automata.SYMBOL_SPONTANEOUS_TRANSITION
             });
 
             automata.SetAutomataType(AutomataType.AFNe);
@@ -45,7 +45,7 @@ namespace AutomataCLI {
                 new Transition(state0, "1", state0),
                 new Transition(state0, "2", state0),
                 new Transition(state0, "3", state0),
-                new Transition(state0, "@", state0),
+                new Transition(state0, Automata.SYMBOL_SPONTANEOUS_TRANSITION, state0),
                 new Transition(state0, "1", state1),
                 new Transition(state0, "2", state3),
                 new Transition(state0, "3", state4),
