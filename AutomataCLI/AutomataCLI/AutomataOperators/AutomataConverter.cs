@@ -13,25 +13,223 @@ namespace AutomataCLI.AutomataOperators {
             public AutomataConverterException(String supplement) : base($"{MESSAGE_BASE}{supplement}") { }
         }
 
-        public static Automata ToDFA(Automata oldAutomata) {
+        public static Automata ToDFA(Automata automata) {
+            var originalType = automata.GetAutomataType();
 
-            if(oldAutomata.GetAutomataType() == AutomataType.AFD){
-                return oldAutomata;
+            if (originalType == AutomataType.AFD){
+                return automata;
             }
 
             var newAutomata = new Automata();
-            newAutomata.AddSymbols(oldAutomata.GetSymbols());
-            newAutomata.AddStates(oldAutomata.GetStates());
-            newAutomata.AddTransitions(oldAutomata.GetTransitions());
+            newAutomata.AddSymbols(automata.GetSymbols());
+            newAutomata.AddStates(automata.GetStates());
+            newAutomata.AddTransitions(automata.GetTransitions());
+            newAutomata.SetInitialState(automata.GetInitialState());
 
-            ConvertStatesToDFA(newAutomata, newAutomata.GetStates().ToList());
+            if (originalType == AutomataType.AFNe) {
+                newAutomata = ToNDFA(automata);
+            }
 
-            newAutomata.SetInitialState(oldAutomata.GetInitialState());
+            MakeTransitionsDeterministic(newAutomata);
+
             newAutomata.SetAutomataType(AutomataType.AFD);
-            newAutomata.RemoveSymbol(Automata.SYMBOL_SPONTANEOUS_TRANSITION);
             newAutomata.RefreshFinalStates();
 
             return newAutomata;
+        }
+
+        public static Automata ToNDFA(Automata automata) {
+            var originalType = automata.GetAutomataType();
+
+            if (originalType == AutomataType.AFN) {
+                return automata;
+            }
+
+            if (originalType == AutomataType.AFD) {
+                throw new AutomataConverterException(
+                    "Can't convert from DFA to NDFA."
+                );
+            }
+
+            Automata newAutomata = new Automata();
+            newAutomata.AddSymbols(automata.GetSymbols());
+            newAutomata.AddStates(automata.GetStates());
+            newAutomata.AddTransitions(automata.GetTransitions());
+            newAutomata.SetInitialState(automata.GetInitialState());
+
+            if (originalType == AutomataType.AFNe) {
+                MergeSpontaneousTransitions(newAutomata);
+            }
+
+            newAutomata.SetAutomataType(AutomataType.AFN);
+
+            return newAutomata;
+        }
+
+        public static void MergeSpontaneousTransitions(Automata automata) {
+            Transition spontaneousTransition = automata.GetTransitionsWithSymbol(
+                Automata.SYMBOL_SPONTANEOUS_TRANSITION).FirstOrDefault();
+
+            var oldStates = new List<State> {
+                spontaneousTransition.From,
+                spontaneousTransition.To
+            };
+
+            var newState = new GroupedState(oldStates);
+            State newInitialState = null;
+
+            if (oldStates.Contains(automata.GetInitialState())) {
+                newInitialState = newState;
+            }
+
+            var transitionsFromOldStates = new List<Transition>();
+            var transitionsToOldStates = new List<Transition>();
+
+            if (automata.ContainsState(spontaneousTransition.From)) {
+                transitionsFromOldStates.AddRange(
+                    automata.GetTransitionsFromState(spontaneousTransition.From)
+                );
+                transitionsToOldStates.AddRange(
+                    automata.GetTransitionsToState(spontaneousTransition.From)
+                );
+            }
+            if (automata.ContainsState(spontaneousTransition.To)) {
+                transitionsFromOldStates.AddRange(
+                    automata.GetTransitionsFromState(spontaneousTransition.To)
+                );
+                transitionsToOldStates.AddRange(
+                    automata.GetTransitionsToState(spontaneousTransition.To)
+                );
+            }
+
+            var transitionsFromNewState = new List<Transition>();
+            transitionsFromOldStates.ForEach(
+                y => {
+                    State newTo = oldStates.Contains(y.To) ? newState : y.To;
+                    if (newTo == newState && y.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
+                    } else {
+                        transitionsFromNewState.Add(new Transition(
+                            newState, y.Input, newTo
+                        ));
+                    }
+                }
+            );
+
+            var transitionsToNewState = new List<Transition>();
+            transitionsToOldStates.ForEach(
+                y => {
+                    State newFrom = oldStates.Contains(y.From) ? newState : y.From;
+                    if (newFrom == newState && y.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
+                    } else {
+                        transitionsToNewState.Add(new Transition(
+                            newFrom, y.Input, newState
+                        ));
+                    }
+                }
+            );
+
+            var oldTransitions = new List<Transition>();
+            oldTransitions.AddRange(transitionsFromOldStates);
+            oldTransitions.AddRange(transitionsToOldStates);
+
+            var newTransitions = new List<Transition>();
+            newTransitions.AddRange(transitionsFromNewState);
+            newTransitions.AddRange(transitionsToNewState);
+
+            // take new and unique transitions only
+            newTransitions = newTransitions
+                .Where(y => !automata.ContainsTransition(y))
+                .GroupBy(y => y.ToString()).Select(y => y.First())
+                .ToList();
+
+            automata.AddState(newState);
+            automata.RemoveTransitions(oldTransitions.ToArray());
+            automata.AddTransitions(newTransitions.ToArray());
+            automata.RemoveStates(oldStates.ToArray());
+
+            if (newInitialState != null) {
+                automata.SetInitialState(newInitialState);
+            }
+
+            automata.RefreshFinalStates();
+
+            if (automata.GetTransitionsWithSymbol(Automata.SYMBOL_SPONTANEOUS_TRANSITION).Count() > 0) {
+                MergeSpontaneousTransitions(automata);
+            }
+        }
+
+        public static void MakeTransitionsDeterministic(Automata automata, State targetState = null) {
+            if (targetState == null) {
+                targetState = automata.GetInitialState();
+            }
+            var transitionsGrouping = automata.GetTransitionsFromState(targetState)
+                .GroupBy(x => x.Input).ToDictionary(t => t.Key, t => t.ToList()); ;
+            
+            foreach (var key in transitionsGrouping.Keys) {
+                transitionsGrouping.TryGetValue(key, out var aggregatedTransitions);
+
+                if (aggregatedTransitions.Count > 0) {
+                    var oldStates = aggregatedTransitions.Select(x => x.To).ToList();
+                    var newState = new GroupedState(oldStates.ToList());
+                    var newTransitions = new List<Transition>();
+
+                    aggregatedTransitions.ForEach(
+                        x => {
+                            newTransitions.Add(new Transition(
+                                targetState, key, newState
+                            ));
+                        }
+                    );
+
+                    var transitionsToOldStates   = new List<Transition>();
+                    var transitionsFromOldStates = new List<Transition>();
+
+                    oldStates.ForEach(
+                        x => {
+                            transitionsToOldStates.AddRange(automata.GetTransitionsToState(x));
+                        }
+                    );
+
+                    oldStates.ForEach(
+                        x => {
+                            transitionsFromOldStates.AddRange(automata.GetTransitionsFromState(x));
+                        }
+                    );
+
+                    transitionsToOldStates.ForEach(
+                        x => {
+                            State fromState = oldStates.Contains(x.From) ? newState : x.From;
+                            newTransitions.Add(new Transition(
+                                fromState, x.Input, newState
+                            ));
+                        }
+                    );
+
+                    transitionsFromOldStates.ForEach(
+                        x => {
+                            State toState = oldStates.Contains(x.To) ? newState : x.To;
+                            newTransitions.Add(new Transition(
+                                newState, x.Input, toState
+                            ));
+                        }
+                    );
+
+                    // take new and unique transitions only
+                    newTransitions = newTransitions.Where(x => !automata.ContainsTransition(x))
+                        .GroupBy(x => x.ToString()).Select(x => x.First()).ToList();
+
+                    if (!automata.ContainsState(newState)) {
+                        automata.AddState(newState);
+                    }
+                    //automata.RemoveTransitions(aggregatedTransitions.ToArray());
+                    if (newTransitions.Count > 0) {
+                        automata.AddTransitions(newTransitions.ToArray());
+                    }
+                    //automata.RemoveStates(oldStates.ToArray());
+
+                    MakeTransitionsDeterministic(automata, newState);
+                }
+            }
         }
 
         public static void ConvertStatesToDFA(
@@ -130,34 +328,9 @@ namespace AutomataCLI.AutomataOperators {
             if(newStates.Count != 0){
                 ConvertStatesToDFA(automata, newStates, referencedStates, referencedTransitions);
             } else {
-                //// take unique states
-                //referencedStates = referencedStates
-                //    .GroupBy(x => x.Name)
-                //    .Select(g => g.First())
-                //    .ToList();
 
-                // set prior states as final if transition is spontaneous to a final state
-                referencedTransitions.ForEach(
-                    x => {
-                        if (x.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION && x.To.IsFinal) {
-                            x.From.SetIsFinal(true);
-                        }
-                    }
-                );
-
-                //var spontaneousFinalStates = referencedTransitions.Where(
-                //    x => x.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION &&
-                //         x.To.IsFinal
-                //).Select(x => x.To);
-
-                //// remove spontenous final states
-                //referencedStates.RemoveAll(
-                //    x => spontaneousFinalStates.Contains(x)
-                //);
-
-                // take unique, non-spontaneous, transitions
+                // take unique transitions
                 referencedTransitions = referencedTransitions
-                    .Where(x => x.Input != Automata.SYMBOL_SPONTANEOUS_TRANSITION)
                     .GroupBy(x => x.ToString())
                     .Select(g => g.First())
                     .ToList();
@@ -172,17 +345,6 @@ namespace AutomataCLI.AutomataOperators {
                 if (referencedStates.Count > 0 && referencedTransitions.Count > 0) {
                     automata.SetStates(referencedStates.ToArray());
                     automata.SetTransitions(referencedTransitions.ToArray());
-                } else {
-                    automata.GetTransitionsWithSymbol(Automata.SYMBOL_SPONTANEOUS_TRANSITION)
-                        .ToList().ForEach(
-                            x => {
-                                if (x.To.IsFinal) {
-                                    x.From.SetIsFinal(true);
-                    }});
-                    automata.RemoveSymbol(
-                        Automata.SYMBOL_SPONTANEOUS_TRANSITION,
-                        removeDependencies: true
-                    );
                 }
             }
             return;

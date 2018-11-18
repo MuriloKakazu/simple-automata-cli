@@ -96,7 +96,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "@"
+                "a", "b"
             };
 
             State[] states = new State[] {
@@ -179,7 +179,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "@"
+                "a", "b"
             };
 
             State[] states = new State[] {
@@ -260,7 +260,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "@"
+                "a", "b"
             };
 
             State[] states = new State[] {
@@ -353,7 +353,7 @@ namespace AutomataCLI_Tests.StructTests {
             //     Assert.IsFalse(reader.Matches(x), $"{x} was not supposed to match");
             // }
 
-            Automata dfaConvertedAutomata = AutomataConverter.ToDFA(automata);
+            AutomataConverter.ToDFA(automata);
 
             // reader = new AutomataReader(dfaConvertedAutomata);
 

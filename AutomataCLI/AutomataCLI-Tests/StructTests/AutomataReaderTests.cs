@@ -279,7 +279,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "0", "1", "2", "@"
+                "0", "1", "2"
             };
 
             State[] states = new State[] {
@@ -409,7 +409,7 @@ namespace AutomataCLI_Tests.StructTests {
 
             String[] symbols = new String[] {
                 "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-                "+", "-", ".", "@"
+                "+", "-", "."
             };
 
             State[] states = new State[] {
