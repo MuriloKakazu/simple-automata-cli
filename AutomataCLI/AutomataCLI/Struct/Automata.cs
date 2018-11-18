@@ -83,6 +83,7 @@ namespace AutomataCLI.Struct {
         #region symbol methods
 
         public void AddSymbol(String symbol) {
+            this.EnsureSymbolIsNotSpontaneous(symbol);
             this.EnsureSymbolIsValid(symbol);
             this.EnsureNotContainsSymbol(symbol);
 
@@ -244,7 +245,7 @@ namespace AutomataCLI.Struct {
             InitialState = GetStateLike(state);
         }
 
-        private void RefreshFinalStates() {
+        public void RefreshFinalStates() {
             FinalStates = States.Where(
                 x => x.IsFinal
             ).ToList();
@@ -261,13 +262,24 @@ namespace AutomataCLI.Struct {
         public void AddTransition(Transition transition) {
             this.EnsureTransitionIsValid(transition);
             this.EnsureNotContainsTransition(transition);
+            this.EnsureContainsState(transition.From);
+            this.EnsureContainsState(transition.To);
+            if (transition.Input != Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
+                this.EnsureContainsSymbol(transition.Input);
+            }
 
-            Transitions.Add(transition);
+            Transitions.Add(new Transition(
+                GetStateLike(transition.From),
+                transition.Input,
+                GetStateLike(transition.To)
+            ));
         }
 
         public void AddTransition(State stateFrom, String input, State stateTo) {
             AddTransition(new Transition(
-                stateFrom, input, stateTo
+                GetStateLike(stateFrom), 
+                input, 
+                GetStateLike(stateTo)
             ));
         }
 

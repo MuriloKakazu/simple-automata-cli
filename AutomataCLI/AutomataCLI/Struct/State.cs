@@ -8,6 +8,10 @@ namespace AutomataCLI.Struct {
         public String Name { get; protected set; }
         public Boolean IsFinal { get; protected set; }
 
+        public void SetIsFinal(Boolean newValue) {
+            IsFinal = newValue;
+        }
+
         public static State Empty
             => new State("Empty");
 
@@ -21,6 +25,8 @@ namespace AutomataCLI.Struct {
             this.Name    = name.Trim();
             this.IsFinal = isFinal;
         }
+
+        protected State() { }
 
         public override String ToString()
           //=> $"{Name} <{(IsFinal ? "Final" : "Not Final")}>";

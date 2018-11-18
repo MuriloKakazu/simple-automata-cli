@@ -52,6 +52,8 @@
     <Compile Include="StructTests\AutomataTests.cs" />
     <Compile Include="StructTests\StateTests.cs" />
     <Compile Include="StructTests\TransitionTests.cs" />
+    <Compile Include="StructTests\AutomataReaderTests.cs" />
+    <Compile Include="StructTests\AutomataConverterTests.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

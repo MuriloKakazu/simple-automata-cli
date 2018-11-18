@@ -12,7 +12,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols =  new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
 
             State[] states = new State[] {
@@ -57,7 +57,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
             String extraSymbol = "d";
 
@@ -77,7 +77,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
 
             String[] removeSymbols = new String[] {
@@ -109,7 +109,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
 
             automata.SetSymbols(symbols);
@@ -139,7 +139,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
 
             automata.SetSymbols(symbols);
@@ -164,7 +164,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
 
             State[] states = new State[] {
@@ -347,7 +347,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
 
             State[] states = new State[] {
@@ -422,7 +422,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
 
             State[] states = new State[] {
@@ -456,7 +456,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
 
             State[] states = new State[] {
@@ -500,7 +500,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
 
             State[] states = new State[] {
@@ -549,7 +549,7 @@ namespace AutomataCLI_Tests.StructTests {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
-                "a", "b", "c", Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                "a", "b", "c"
             };
 
             State[] states = new State[] {

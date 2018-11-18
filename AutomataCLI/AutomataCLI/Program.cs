@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutomataCLI.Struct;
 using System.Diagnostics;
 using AutomataCLI.Serialization;
+using AutomataCLI.AutomataOperators;
 
 namespace AutomataCLI {
     class Program {
@@ -70,7 +71,7 @@ namespace AutomataCLI {
             watch.Stop();
             Console.WriteLine(automata);
             Console.WriteLine("---------------------------------------------------------------------------");
-            Console.WriteLine(AutomataConverter.ToNFA(automata));
+            Console.WriteLine(AutomataConverter.ToDFA(automata));
             //Console.WriteLine($"Execution time: {watch.Elapsed.TotalMilliseconds.ToString()}ms")
 
             // MUST SUCCEED TEST

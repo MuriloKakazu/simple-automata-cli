@@ -21,7 +21,9 @@ namespace AutomataCLI.Extensions {
             automata.EnsureStateIsValid(state);
             automata.EnsureSymbolIsValid(symbol);
             automata.EnsureContainsState(state);
-            automata.EnsureContainsSymbol(symbol);
+            if (symbol != Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
+                automata.EnsureContainsSymbol(symbol);
+            }
 
             State automataStateInstance = automata.GetStateLike(state);
             return automata.GetTransitions().ToList().Where(
@@ -44,7 +46,9 @@ namespace AutomataCLI.Extensions {
             automata.EnsureStateIsValid(state);
             automata.EnsureSymbolIsValid(symbol);
             automata.EnsureContainsState(state);
-            automata.EnsureContainsSymbol(symbol);
+            if (symbol != Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
+                automata.EnsureContainsSymbol(symbol);
+            }
 
             State automataStateInstance = automata.GetStateLike(state);
             return automata.GetTransitions().ToList().Where(
@@ -55,7 +59,9 @@ namespace AutomataCLI.Extensions {
 
         public static IEnumerable<Transition> GetTransitionsWithSymbol(this Automata automata, String symbol) {
             automata.EnsureSymbolIsValid(symbol);
-            automata.EnsureContainsSymbol(symbol);
+            if (symbol != Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
+                automata.EnsureContainsSymbol(symbol);
+            }
 
             return automata.GetTransitions().ToList().Where(
                 x => x.Input == symbol
@@ -146,6 +152,24 @@ namespace AutomataCLI.Extensions {
             );
         }
 
+        public static void EnsureSymbolIsNotSpontaneous(this Automata automata, String symbol) {
+            ValidationUtils.EnsureNotEquals(
+                Automata.SYMBOL_SPONTANEOUS_TRANSITION,
+                symbol, new InvalidValueException(
+                    symbol
+                )
+            );
+        }
+
+        public static void EnsureSymbolIsSpontaneous(this Automata automata, String symbol) {
+            ValidationUtils.EnsureEquals(
+                Automata.SYMBOL_SPONTANEOUS_TRANSITION,
+                symbol, new InvalidValueException(
+                    symbol
+                )
+            );
+        }
+
         public static void EnsureStateIsValid(this Automata automata, State state) {
             automata.EnsureStateIsValid(state?.Name);
         }
@@ -178,10 +202,6 @@ namespace AutomataCLI.Extensions {
             automata.EnsureSymbolIsValid(input);
             automata.EnsureStateIsValid(stateFrom);
             automata.EnsureStateIsValid(stateTo);
-
-            automata.EnsureContainsSymbol(input);
-            automata.EnsureContainsState(stateFrom);
-            automata.EnsureContainsState(stateTo);
         }
     }
 }

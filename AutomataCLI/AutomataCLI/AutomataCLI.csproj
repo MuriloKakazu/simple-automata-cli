@@ -47,12 +47,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Struct\Automata.cs" />
     <Compile Include="Struct\AutomataType.cs" />
-    <Compile Include="AutomataConverter.cs" />
     <Compile Include="Struct\State.cs" />
     <Compile Include="Struct\GroupedState.cs" />
     <Compile Include="Struct\Transition.cs" />
-    <Compile Include="Struct\AutomataReader.cs" />
-    <Compile Include="Struct\AutomataWorker.cs" />
     <Compile Include="Utils\ValidationUtils.cs" />
     <Compile Include="Serialization\AutomataSerializer.cs" />
     <Compile Include="Exceptions\AutomataException.cs" />
@@ -60,6 +57,9 @@
     <Compile Include="Exceptions\DuplicateValueException.cs" />
     <Compile Include="Extensions\AutomataExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="AutomataOperators\AutomataConverter.cs" />
+    <Compile Include="AutomataOperators\AutomataWorker.cs" />
+    <Compile Include="AutomataOperators\AutomataReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
