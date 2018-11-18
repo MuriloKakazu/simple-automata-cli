@@ -15,6 +15,18 @@ namespace AutomataCLI.Utils {
             }
         }
 
+        public static void EnsureNotEquals(Object obj1, Object obj2, Exception throwException) {
+            if (obj1 == obj2) {
+                throw throwException;
+            }
+        }
+
+        public static void EnsureEquals(Object obj1, Object obj2, Exception throwException) {
+            if (obj1 != obj2) {
+                throw throwException;
+            }
+        }
+
         public static void EnsureNotDefault(Object obj, Exception throwException) {
             if (obj == obj.GetDefault()) {
                 throw throwException;
