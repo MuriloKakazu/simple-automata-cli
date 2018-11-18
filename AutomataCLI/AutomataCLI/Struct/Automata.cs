@@ -244,7 +244,7 @@ namespace AutomataCLI.Struct {
             InitialState = GetStateLike(state);
         }
 
-        private void RefreshFinalStates() {
+        public void RefreshFinalStates() {
             FinalStates = States.Where(
                 x => x.IsFinal
             ).ToList();

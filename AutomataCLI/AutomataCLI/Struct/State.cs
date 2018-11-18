@@ -8,6 +8,10 @@ namespace AutomataCLI.Struct {
         public String Name { get; protected set; }
         public Boolean IsFinal { get; protected set; }
 
+        public void SetIsFinal(Boolean newValue) {
+            IsFinal = newValue;
+        }
+
         public static State Empty
             => new State("Empty");
 

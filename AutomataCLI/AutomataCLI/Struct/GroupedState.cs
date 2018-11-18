@@ -5,14 +5,20 @@ using System.Linq;
 namespace AutomataCLI.Struct {
 
     public class GroupedState : State {
-        private List<State> GroupedStates {get; set;}
+        private List<State> SubStates {get; set;}
 
-        public List<State> GetGroupedStates() => this.GroupedStates;
-        public void SetGroupedStates(List<State> states) => this.GroupedStates = states;
-        public GroupedState(List<State> groupedStates) 
-            : base(String.Join("_", groupedStates.Select(x => x.Name)), groupedStates.Any(x => x.IsFinal)) {
+        public State[] GetSubStates() 
+            => this.SubStates.ToArray();
+
+        public void SetSubStates(List<State> states) 
+            => this.SubStates = states;
+
+        public GroupedState(List<State> subStates) 
+            : base(String.Join("_", 
+                subStates.Select(x => x.Name)), 
+                subStates.Any(x => x.IsFinal)) {
             
-            SetGroupedStates(groupedStates);
+            SetSubStates(subStates);
         }
     }
 }

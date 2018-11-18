@@ -1,5 +1,5 @@
 ﻿namespace AutomataCLI.Struct {
     public enum AutomataType {
-        AFN, AFNe
+        AFN, AFNe, AFD
     }
 }
