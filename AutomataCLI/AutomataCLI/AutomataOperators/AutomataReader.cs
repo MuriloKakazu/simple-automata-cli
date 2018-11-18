@@ -17,19 +17,22 @@ namespace AutomataCLI.AutomataOperators {
         }
 
         public Boolean Matches(String input){
+            var initialState = this.Automata.GetInitialState();
+            var firstInput = String.IsNullOrWhiteSpace(input) ? input : input[0].ToString();
 
-            String firstInput = String.IsNullOrWhiteSpace(input) ? input : input[0].ToString();
-
-            Transition initialTransition = Automata.GetTransitions().ToList().Find(
+            var initialTransition = Automata.GetTransitions().ToList().Find(
                 x => (
-                    x.From  == this.Automata.GetInitialState() && (
+                    x.From  == initialState && (
                         x.Input == firstInput ||
                         x.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION
                     )
                 )
             );
 
-            if(initialTransition == null){
+            if (initialTransition == null) {
+                if (firstInput == "" && initialState.IsFinal) {
+                    return true;
+                }
                 return false;
             }
 

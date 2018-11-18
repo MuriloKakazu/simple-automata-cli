@@ -268,12 +268,18 @@ namespace AutomataCLI.Struct {
                 this.EnsureContainsSymbol(transition.Input);
             }
 
-            Transitions.Add(transition);
+            Transitions.Add(new Transition(
+                GetStateLike(transition.From),
+                transition.Input,
+                GetStateLike(transition.To)
+            ));
         }
 
         public void AddTransition(State stateFrom, String input, State stateTo) {
             AddTransition(new Transition(
-                stateFrom, input, stateTo
+                GetStateLike(stateFrom), 
+                input, 
+                GetStateLike(stateTo)
             ));
         }
 

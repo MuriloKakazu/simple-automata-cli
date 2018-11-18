@@ -7,18 +7,53 @@ namespace AutomataCLI.Struct {
     public class GroupedState : State {
         private List<State> SubStates {get; set;}
 
-        public State[] GetSubStates() 
+        public State[] GetSubStates()
             => this.SubStates.ToArray();
 
-        public void SetSubStates(List<State> states) 
-            => this.SubStates = states;
+        public void SetSubStates(IEnumerable<State> states) {
+            SubStates.Clear();
+            states.ToList().ForEach(
+                x => AddSubState(x)
+            );
+        }
 
-        public GroupedState(List<State> subStates) 
-            : base(String.Join("_", 
-                subStates.Select(x => x.Name)), 
-                subStates.Any(x => x.IsFinal)) {
-            
+        public GroupedState(IEnumerable<State> subStates) {
+            SubStates = new List<State>();
             SetSubStates(subStates);
+        }
+
+        public void AddSubState(State newState) {
+            if (newState is GroupedState) {
+                var goupedState = (GroupedState) newState;
+                goupedState.SubStates.ForEach(
+                    x => AddSubState(x)
+                );
+            } else {
+                if (!ContainsSubStateLike(newState)) {
+                    SubStates.Add(newState);
+                    Name = (Name == null) ? 
+                        newState.Name : 
+                        String.Join("_", Name, newState.Name);
+
+                    if (newState.IsFinal) {
+                        this.IsFinal = true;
+                    }
+                }
+            }
+        }
+
+        public void AddSubStates(IEnumerable<State> newStates) {
+            newStates.ToList().ForEach(
+                x => AddSubState(x)
+            );
+        }
+
+        protected Boolean ContainsSubStateLike(String name) {
+            return SubStates.Any(x => x.Name == name);
+        }
+
+        protected Boolean ContainsSubStateLike(State state) {
+            return ContainsSubStateLike(state?.Name);
         }
     }
 }

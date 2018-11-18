@@ -26,6 +26,8 @@ namespace AutomataCLI.Struct {
             this.IsFinal = isFinal;
         }
 
+        protected State() { }
+
         public override String ToString()
           //=> $"{Name} <{(IsFinal ? "Final" : "Not Final")}>";
             => $"{Name}";
