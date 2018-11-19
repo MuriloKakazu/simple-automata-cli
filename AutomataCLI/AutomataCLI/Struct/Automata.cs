@@ -276,6 +276,13 @@ namespace AutomataCLI.Struct {
             this.EnsureContainsState(transition.To);
             if (transition.Input != Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
                 this.EnsureContainsSymbol(transition.Input);
+            } else {
+                this.EnsureAutomataIsOfType(AutomataType.AFNe,
+                    new InvalidValueException(
+                        transition + " (not AFNe)",
+                        typeof(Transition)
+                    )
+                );
             }
 
             Transitions.Add(new Transition(
