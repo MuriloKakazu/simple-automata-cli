@@ -145,11 +145,16 @@ namespace AutomataCLI.Extensions {
         }
 
         public static void EnsureSymbolIsValid(this Automata automata, String symbol) {
-            ValidationUtils.EnsureNotNullEmptyOrWhitespace(
+            ValidationUtils.EnsureNotNull(
                 symbol, new InvalidValueException(
                     symbol
                 )
             );
+            if (symbol.Length < 1) {
+                throw new InvalidValueException(
+                    symbol
+                );
+            }
         }
 
         public static void EnsureSymbolIsNotSpontaneous(this Automata automata, String symbol) {

@@ -28,7 +28,7 @@ namespace AutomataCLI.Struct {
             );
 
             this.From  = from;
-            this.Input = input?.Trim();
+            this.Input = input;
             this.To    = to;
         }
 

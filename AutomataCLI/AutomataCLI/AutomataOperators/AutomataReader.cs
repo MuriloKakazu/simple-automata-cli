@@ -45,5 +45,29 @@ namespace AutomataCLI.AutomataOperators {
                 return false;
             }
         }
+
+        public void MatchAll(String[] input) {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Program.WriteSeparator();
+            input.ToList().ForEach( 
+                x => {
+                    try {
+                        Console.WriteLine($"Input: '{x}'");
+                        if (Matches(x)) {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("ACEITO!");
+                        } else {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("NÃO ACEITO!");
+                        }
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Program.WriteSeparator();
+                    } catch (Exception e) {
+                        Program.LogError(e.Message);
+                    }
+                }
+            );
+            Console.ResetColor();
+        }
     }
 }
