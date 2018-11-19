@@ -25,14 +25,29 @@ namespace AutomataCLI.Serialization {
             );
         }
 
+        static String RemoveBadChars(String input) {
+            return input.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
+        }
+
         public static Automata Deserialize(String plainText, Boolean displayDebug = false) {
             Boolean abandon = false;
             // Char newLine = '\n';
             // Char commaSeparator = ',';
-            String[] textLines = plainText.Split(NEWLINE_CHAR);
+            var badTextLines = plainText.Split(NEWLINE_CHAR).ToList();
+            var textLines = new List<String>();
+            badTextLines.ForEach(
+                x => {
+                    String input = RemoveBadChars(x);
+                    if (x.Contains(EOF_STR)) {
+                        textLines.Add(input.Trim());
+                    } else {
+                        textLines.Add(input);
+                    }
+                }
+            );
             Automata deserializedAutomata = new Automata();
 
-            if (textLines.Length >= 7) {
+            if (textLines.Count >= 7) {
                 String type = textLines[0].Trim();
                 List<String> states = textLines[1].Split(COMMA_SEPARATOR_CHAR).ToList();
                 List<String> symbols = textLines[2].Split(COMMA_SEPARATOR_CHAR).ToList();
@@ -40,24 +55,13 @@ namespace AutomataCLI.Serialization {
                 List<String> finalStates = textLines[4].Split(COMMA_SEPARATOR_CHAR).ToList();
                 List<String> transitions = new List<String>();
 
-                for (Int32 i = 5; i < textLines.Length - 1; i++) {
-                    if (!String.IsNullOrWhiteSpace(textLines[i]) && textLines[i] != EOF_STR) {
+                var EOFIndex = textLines.ToList().IndexOf(EOF_STR);
+
+                for (Int32 i = 5; i < textLines.Count - 1; i++) {
+                    if (!String.IsNullOrWhiteSpace(textLines[i]) && i < EOFIndex) {
                         transitions.Add(textLines[i]);
                     }
                 }
-
-                states.ForEach(
-                    x => x = x.Trim()
-                );
-                symbols.ForEach(
-                    x => x = x.Trim()
-                );
-                finalStates.ForEach(
-                    x => x = x.Trim()
-                );
-                transitions.ForEach(
-                    x => x = x.Trim()
-                );
 
                 deserializedAutomata.SetAutomataType(DeserializeType(type));
 
@@ -66,7 +70,9 @@ namespace AutomataCLI.Serialization {
                         try {
                             deserializedAutomata.AddSymbol(x);
                             if (displayDebug) {
-                                Console.WriteLine($"Symbol \"{x}\" loaded.");
+                                Console.ForegroundColor = ConsoleColor.Magenta;
+                                Console.WriteLine($"Symbol '{x}' loaded.");
+                                Console.ResetColor();
                             }
                         } catch (Exception e) {
                             abandon = !HandleException(e, x, "Symbol");
@@ -82,7 +88,9 @@ namespace AutomataCLI.Serialization {
                         try {
                             deserializedAutomata.AddState(DeserializeState(x, finalStates.ToArray()));
                             if (displayDebug) {
-                                Console.WriteLine($"State \"{x}\" loaded.");
+                                Console.ForegroundColor = ConsoleColor.Magenta;
+                                Console.WriteLine($"State '{x}' loaded.");
+                                Console.ResetColor();
                             }
                         } catch (Exception e) {
                             abandon = !HandleException(e, x, "State");
@@ -98,7 +106,9 @@ namespace AutomataCLI.Serialization {
                         try {
                             deserializedAutomata.AddTransition(DeserializeTransition(x, deserializedAutomata));
                             if (displayDebug) {
-                                Console.WriteLine($"Transition \"{x}\" loaded.");
+                                Console.ForegroundColor = ConsoleColor.Magenta;
+                                Console.WriteLine($"Transition '{x}' loaded.");
+                                Console.ResetColor();
                             }
                         } catch (Exception e) {
                             abandon = !HandleException(e, x, "Transition");
@@ -116,10 +126,12 @@ namespace AutomataCLI.Serialization {
                         )
                     );
                     if (displayDebug) {
-                        Console.WriteLine($"State \"{initialState}\" set as initializer.");
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine($"State '{initialState}' set as initializer.");
+                        Console.ResetColor();
                     }
                 } else {
-                    throw new AutomataSerializerException($"Initial state \"{initialState}\" is invalid.");
+                    throw new AutomataSerializerException($"Initial state '{initialState}' is invalid.");
                 }
 
             } else {
@@ -130,9 +142,11 @@ namespace AutomataCLI.Serialization {
         }
 
         protected static Boolean HandleException(Exception e, String memberName, String memberType) {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Error: {e.Message}.");
-            Console.WriteLine($"Would you like to skip this error? ({memberType} \"{memberName}\" will be ignored)");
-            Console.WriteLine($"Type \"Y\" to continue:");
+            Console.WriteLine($"Would you like to skip this error? ({memberType} '{memberName}' will be ignored)");
+            Console.WriteLine($"Type 'Y' to continue:");
+            Console.ResetColor();
             return Console.ReadLine().ToUpper() == "Y";
         }
 
@@ -173,7 +187,7 @@ namespace AutomataCLI.Serialization {
                 return (AutomataType) Enum.Parse(typeof(AutomataType), plainText);
             }
             else {
-                throw new AutomataSerializerException($"Automata type \"{plainText}\" is invalid.");
+                throw new AutomataSerializerException($"Automata type '{plainText}' is invalid.");
             }
         }
 
@@ -189,14 +203,16 @@ namespace AutomataCLI.Serialization {
             String[] transitionMembers = plainText.Replace("(", "").Replace(")", "").Split(',');
 
             if (transitionMembers.Length != 3) {
-                throw new AutomataSerializerException($"Invalid transition: {plainText}");
+                throw new AutomataSerializerException($"Invalid transition: '{plainText}'");
             }
 
             String stateFrom = transitionMembers[0].Trim();
-            String input     = transitionMembers[1].Trim();
+            String input     = transitionMembers[1];
             String stateTo   = transitionMembers[2].Trim();
 
-            automata.EnsureContainsSymbol(input);
+            if (input != Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
+                automata.EnsureContainsSymbol(input);
+            }
             automata.EnsureContainsState(stateFrom);
             automata.EnsureContainsState(stateTo);
 

@@ -31,7 +31,7 @@ namespace AutomataCLI.Exceptions {
                 targetType = supplement?.GetType();
             }
 
-            supplement = $"{supplement?.ToString()} ({targetType?.Name}).";
+            supplement = $"'{supplement?.ToString()}' ({targetType?.Name}).";
             return $"{title}{(String.IsNullOrWhiteSpace(supplement?.ToString()) ? "." : $": {supplement}.")}";
         }
 
