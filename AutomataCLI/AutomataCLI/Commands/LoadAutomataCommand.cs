@@ -26,9 +26,10 @@ namespace AutomataCLI.Commands {
 
             if (File.Exists(Supplement)) {
                 try {
+                    Program.CurrentAutomataFilePath = Supplement;
                     Program.CurrentAutomata = AutomataSerializer.Deserialize(File.ReadAllText(Supplement), true);
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Automata succuesfully loaded! Type 'show_automata' to see its inner members.");
+                    Console.WriteLine("Automata succesfully loaded! Type 'show_automata' to see its inner members.");
                     Console.ResetColor();
                 } catch (Exception e) {
                     Program.LogError(e.Message);

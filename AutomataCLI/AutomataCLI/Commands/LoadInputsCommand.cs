@@ -26,8 +26,14 @@ namespace AutomataCLI.Commands {
 
             if (Program.CurrentAutomata != null) {
                 if (File.Exists(Supplement)) {
+                    var fileNameWithoutSulfix = Path.GetFileNameWithoutExtension(Supplement).Split('.').First();
                     var reader = new AutomataReader(Program.CurrentAutomata);
-                    reader.MatchAll(File.ReadAllLines(Supplement));
+                    var results = reader.MatchAll(File.ReadAllLines(Supplement));
+
+                    using (var writer = new StreamWriter(Supplement.Replace($"{fileNameWithoutSulfix}.IN", $"{ fileNameWithoutSulfix }.OUT"))){
+                        writer.Write(results);
+                    }
+
                 } else {
                     Program.LogError($"File \"{Supplement}\" does not exist.");
                 }

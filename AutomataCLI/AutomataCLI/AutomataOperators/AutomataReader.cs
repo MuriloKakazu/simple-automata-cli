@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,19 +47,23 @@ namespace AutomataCLI.AutomataOperators {
             }
         }
 
-        public void MatchAll(String[] input) {
+        public String MatchAll(String[] input) {
+            String results = "";
             Console.ForegroundColor = ConsoleColor.Yellow;
             Program.WriteSeparator();
             input.ToList().ForEach( 
                 x => {
                     try {
                         Console.WriteLine($"Input: '{x}'");
+                        results += x;
                         if (Matches(x)) {
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("ACEITO!");
+                            Console.WriteLine("ACEITO");
+                            results += " ACEITO" + Environment.NewLine;
                         } else {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("NÃO ACEITO!");
+                            Console.WriteLine("REJEITADO");
+                            results += " REJEITADO" + Environment.NewLine;
                         }
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Program.WriteSeparator();
@@ -68,6 +73,7 @@ namespace AutomataCLI.AutomataOperators {
                 }
             );
             Console.ResetColor();
+            return results;
         }
     }
 }
