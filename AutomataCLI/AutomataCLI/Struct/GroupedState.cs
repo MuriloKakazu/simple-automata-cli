@@ -31,15 +31,20 @@ namespace AutomataCLI.Struct {
             } else {
                 if (!ContainsSubStateLike(newState)) {
                     SubStates.Add(newState);
-                    Name = (Name == null) ? 
-                        newState.Name : 
-                        String.Join("_", Name, newState.Name);
-
+                    //Name = (Name == null) ? 
+                    //    newState.Name : 
+                    //    String.Join("_", Name, newState.Name);
+                    FixName();
                     if (newState.IsFinal) {
                         this.IsFinal = true;
                     }
                 }
             }
+        }
+
+        protected void FixName() {
+            SubStates = SubStates.OrderBy(x => x.Name).ToList();
+            Name = String.Join("_", SubStates);
         }
 
         public void AddSubStates(IEnumerable<State> newStates) {

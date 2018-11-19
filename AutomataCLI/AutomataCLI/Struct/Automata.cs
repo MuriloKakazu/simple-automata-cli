@@ -48,25 +48,35 @@ namespace AutomataCLI.Struct {
         public override String ToString() {
             String newLine = Environment.NewLine;
             String tab = "\t";
+            String quoteChar = "'";
             String commaSeparator = ", ";
-            String type           = tab + AutomataType.ToString();
+            String type           = tab + quoteChar + AutomataType.ToString() + quoteChar;
             String states         = "";
             String symbols        = "";
-            String initialState   = tab + InitialState?.ToString();
-            String finalStates    = "";
+            String initialState   = tab + quoteChar + InitialState?.ToString() + quoteChar;
+            String finalStates    = tab;
             String transitions    = "";
 
             States.ForEach(
-                x => states += x.ToString() + commaSeparator
+                x => states += quoteChar + x.ToString() + quoteChar + commaSeparator
             );
+            if (states.Length >= 3) {
+                states = states.Substring(0, states.Length - 2);
+            }
             Symbols.ForEach(
-                x => symbols += x + commaSeparator
+                x => symbols += quoteChar + x + quoteChar + commaSeparator
             );
+            if (symbols.Length >= 3) {
+                symbols = symbols.Substring(0, symbols.Length - 2);
+            }
             FinalStates.ForEach(
-                x => finalStates += tab + x.ToString() + commaSeparator
+                x => finalStates += quoteChar + x.ToString() + quoteChar + commaSeparator
             );
+            if (finalStates.Length >= 3) {
+                finalStates = finalStates.Substring(0, finalStates.Length - 2);
+            }
             Transitions.ForEach(
-                x => transitions += tab + x.ToString() + newLine
+                x => transitions += tab + quoteChar + x.ToString() + quoteChar + newLine
             );
 
             return
@@ -87,7 +97,7 @@ namespace AutomataCLI.Struct {
             this.EnsureSymbolIsValid(symbol);
             this.EnsureNotContainsSymbol(symbol);
 
-            Symbols.Add(symbol.Trim());
+            Symbols.Add(symbol);
         }
 
         public void AddSymbols(String[] symbols) {
@@ -266,6 +276,13 @@ namespace AutomataCLI.Struct {
             this.EnsureContainsState(transition.To);
             if (transition.Input != Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
                 this.EnsureContainsSymbol(transition.Input);
+            } else {
+                this.EnsureAutomataIsOfType(AutomataType.AFNe,
+                    new InvalidValueException(
+                        transition + " (not AFNe)",
+                        typeof(Transition)
+                    )
+                );
             }
 
             Transitions.Add(new Transition(

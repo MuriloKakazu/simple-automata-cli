@@ -145,11 +145,16 @@ namespace AutomataCLI.Extensions {
         }
 
         public static void EnsureSymbolIsValid(this Automata automata, String symbol) {
-            ValidationUtils.EnsureNotNullEmptyOrWhitespace(
+            ValidationUtils.EnsureNotNull(
                 symbol, new InvalidValueException(
                     symbol
                 )
             );
+            if (symbol.Length < 1) {
+                throw new InvalidValueException(
+                    symbol
+                );
+            }
         }
 
         public static void EnsureSymbolIsNotSpontaneous(this Automata automata, String symbol) {
@@ -202,6 +207,14 @@ namespace AutomataCLI.Extensions {
             automata.EnsureSymbolIsValid(input);
             automata.EnsureStateIsValid(stateFrom);
             automata.EnsureStateIsValid(stateTo);
+        }
+
+        public static void EnsureAutomataIsOfType(this Automata automata, AutomataType automataType, Exception throwException) {
+            ValidationUtils.EnsureEquals(
+                automataType.ToString(), 
+                automata.GetAutomataType().ToString(), 
+                throwException
+            );
         }
     }
 }
