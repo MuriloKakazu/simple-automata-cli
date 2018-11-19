@@ -34,8 +34,9 @@ namespace AutomataCLI.AutomataOperators {
 
                 // make sure spontaneous transitions are the last members in list
                 possibleTransitions.AddRange(this.Automata.GetTransitions().ToList().Where(
-                    x => x.From  == this.CurrentState &&
-                         x.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                    x => x.From  == this.CurrentState && 
+                         x.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION &&
+                         x.From != x.To
                 ));
 
                 var transitionsQuantity = possibleTransitions.Count;
@@ -68,7 +69,8 @@ namespace AutomataCLI.AutomataOperators {
                 possibleTransitions = this.Automata.GetTransitions().ToList().Where(
                     x => (
                         x.From  == this.CurrentState &&
-                        x.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                        x.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION &&
+                        x.From != x.To
                     )
                 ).ToList();
                 if (possibleTransitions.Count > 0) {
@@ -100,7 +102,7 @@ namespace AutomataCLI.AutomataOperators {
                     cts.Cancel();
                     return true;
                 }
-            } catch (StackOverflowException e) {
+            } catch (Exception e) {
                 cts.Cancel();
             }
             return false;

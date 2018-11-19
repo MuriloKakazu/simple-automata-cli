@@ -13,6 +13,10 @@ namespace AutomataCLI {
     class Program {
         public static Automata CurrentAutomata;
         public static String  CurrentAutomataFilePath;
+        
+        static Program() {
+            Console.Title = "Automata CLI";
+        }
 
         static void Main(String[] args) {
             LoadCommands();

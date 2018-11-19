@@ -23,9 +23,11 @@ namespace AutomataCLI.AutomataOperators {
 
             var initialTransition = Automata.GetTransitions().ToList().Find(
                 x => (
-                    x.From  == initialState && (
-                        x.Input == firstInput ||
-                        x.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION
+                    x.From  == initialState && 
+                        x.Input == firstInput || (
+                            x.Input == Automata.SYMBOL_SPONTANEOUS_TRANSITION &&
+                            x.From != x.To
+                        )
                     )
                 )
             );
@@ -38,11 +40,11 @@ namespace AutomataCLI.AutomataOperators {
             }
 
             State firstWorkerState = initialTransition.From;
-
+            
             try{
                 return new AutomataWorker(this.Automata, firstWorkerState,
                     input.Select(x => x.ToString()).ToList()).WorkAsync().Result;
-            } catch(StackOverflowException e){
+            } catch(Exception e){
                 return false;
             }
         }
