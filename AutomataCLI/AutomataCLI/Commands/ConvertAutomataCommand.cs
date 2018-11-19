@@ -12,7 +12,7 @@ namespace AutomataCLI.Commands {
         public static void Load() {
             var command = new ConvertAutomataCommand() {
                 Body = "convert_automata",
-                HelpText = "convert_automata <AFN, AFD>"
+                HelpText = "convert_automata <AFD>"
             };
             Command.Subscribe(command);
         }
@@ -25,7 +25,7 @@ namespace AutomataCLI.Commands {
             }
 
             String[] validSupplements = new String[] {
-                "AFN",
+                //"AFN",
                 "AFD"
             };
 
@@ -34,7 +34,7 @@ namespace AutomataCLI.Commands {
                     var conversionType = Supplement.ToUpper();
                     if (validSupplements.Contains(conversionType)) {
                         if (conversionType == "AFN") {
-                            Program.CurrentAutomata = AutomataConverter.ToNDFA(Program.CurrentAutomata);
+                            //Program.CurrentAutomata = AutomataConverter.ToNDFA(Program.CurrentAutomata);
                         } else if (conversionType == "AFD") {
                             Program.CurrentAutomata = AutomataConverter.ToDFA(Program.CurrentAutomata);
                         }

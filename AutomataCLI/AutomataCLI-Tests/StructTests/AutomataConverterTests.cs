@@ -258,7 +258,7 @@ namespace AutomataCLI_Tests.StructTests {
         }
 
         [TestMethod]
-        public void TestConversion_NDFAe_To_NDFA_0() {
+        public void TestConversion_NDFAe_To_DFA_2() {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
@@ -355,11 +355,11 @@ namespace AutomataCLI_Tests.StructTests {
                 Assert.IsFalse(reader.Matches(x), $"{x} was not supposed to match");
             }
 
-            Automata convertedAutomata = AutomataConverter.ToNDFA(automata);
+            Automata convertedAutomata = AutomataConverter.ToDFA(automata);
 
             reader = new AutomataReader(convertedAutomata);
 
-            Assert.AreEqual(AutomataType.AFN, convertedAutomata.GetAutomataType());
+            Assert.AreEqual(AutomataType.AFD, convertedAutomata.GetAutomataType());
 
             foreach (var x in validInputs) {
                 Assert.IsTrue(reader.Matches(x), $"{x} was supposed to match");
@@ -371,7 +371,7 @@ namespace AutomataCLI_Tests.StructTests {
         }
 
         [TestMethod]
-        public void TestConversion_NDFAe_To_DFA_2() {
+        public void TestConversion_NDFAe_To_DFA_3() {
             Automata automata = new Automata();
 
             String[] symbols = new String[] {
