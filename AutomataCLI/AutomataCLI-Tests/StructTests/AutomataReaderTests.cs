@@ -291,6 +291,7 @@ namespace AutomataCLI_Tests.StructTests {
             Transition[] transitions = new Transition[] {
                 new Transition(states[0], "0", states[0]),
                 new Transition(states[0], "@", states[1]),
+                new Transition(states[0], "@", states[0]),
                 new Transition(states[1], "1", states[1]),
                 new Transition(states[1], "@", states[2]),
                 new Transition(states[2], "2", states[2])
@@ -650,6 +651,58 @@ namespace AutomataCLI_Tests.StructTests {
             }
 
             foreach (var x in invalidInputs) {
+                Assert.IsFalse(reader.Matches(x), $"{x} was not supposed to match");
+            }
+        }
+
+        [TestMethod]
+        public void TestMatchAutomata8() {
+            /*
+             *      L = {0}*{1}*{2}* (AFNe)
+             */
+
+            Automata automata = new Automata();
+
+            String[] symbols = new String[] {
+                "0", "1", "2"
+            };
+
+            State[] states = new State[] {
+                new State("q0", false),
+                new State("q1", false),
+                new State("q2", true)
+            };
+
+            Transition[] transitions = new Transition[] {
+                new Transition(states[0], "0", states[0]),
+                new Transition(states[0], "@", states[1]),
+                new Transition(states[0], "@", states[0]),
+                new Transition(states[1], "1", states[2]),
+                new Transition(states[1], "@", states[2]),
+                new Transition(states[2], "2", states[2])
+            };
+
+            automata.SetAutomataType(AutomataType.AFNe);
+            automata.AddSymbols(symbols);
+            automata.AddStates(states);
+            automata.AddTransitions(transitions);
+            automata.SetInitialState(states[0]);
+
+            String[] validInputs = new String[] {
+                "1"
+            };
+
+            String[] invalidInputs = new String[] {
+
+            };
+
+            AutomataReader reader = new AutomataReader(automata);
+
+            foreach(var x in validInputs) {
+                Assert.IsTrue(reader.Matches(x), $"{x} was supposed to match");
+            }
+
+            foreach(var x in invalidInputs) {
                 Assert.IsFalse(reader.Matches(x), $"{x} was not supposed to match");
             }
         }
