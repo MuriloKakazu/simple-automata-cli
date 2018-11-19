@@ -12,6 +12,7 @@ using AutomataCLI.Commands;
 namespace AutomataCLI {
     class Program {
         public static Automata CurrentAutomata;
+        public static String  CurrentAutomataFilePath;
 
         static void Main(String[] args) {
             LoadCommands();
@@ -30,6 +31,7 @@ namespace AutomataCLI {
             LoadInputsCommand.Load();
             ConvertAutomataCommand.Load();
             ShowAutomataCommand.Load();
+            ShowTransitionsTableCommand.Load();
         }
 
         static void ShowAvailableCommands() {

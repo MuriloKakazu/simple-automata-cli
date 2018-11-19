@@ -39,7 +39,7 @@ namespace AutomataCLI.Commands {
                             Program.CurrentAutomata = AutomataConverter.ToDFA(Program.CurrentAutomata);
                         }
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("Automata succuesfully converted! Type 'show_automata' to see its inner members.");
+                        Console.WriteLine("Automata succesfully converted! Type 'show_automata' to see its inner members.");
                         Console.ResetColor();
                     } else {
                         Program.LogError($"{Supplement} is not a valid conversion type.");
