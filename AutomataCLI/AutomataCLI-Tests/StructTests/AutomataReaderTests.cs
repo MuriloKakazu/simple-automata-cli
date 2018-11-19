@@ -296,10 +296,10 @@ namespace AutomataCLI_Tests.StructTests {
                 new Transition(states[2], "2", states[2])
             };
 
+            automata.SetAutomataType(AutomataType.AFNe);
             automata.AddSymbols(symbols);
             automata.AddStates(states);
             automata.AddTransitions(transitions);
-            automata.SetAutomataType(AutomataType.AFNe);
             automata.SetInitialState(states[0]);
 
             String[] validInputs = new String[] {
@@ -470,10 +470,10 @@ namespace AutomataCLI_Tests.StructTests {
                 new Transition(states[3], "@", states[5]),
             };
 
+            automata.SetAutomataType(AutomataType.AFNe);
             automata.AddSymbols(symbols);
             automata.AddStates(states);
             automata.AddTransitions(transitions);
-            automata.SetAutomataType(AutomataType.AFNe);
             automata.SetInitialState(states[0]);
 
             String[] validInputs = new String[] {

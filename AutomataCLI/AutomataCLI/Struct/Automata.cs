@@ -60,15 +60,21 @@ namespace AutomataCLI.Struct {
             States.ForEach(
                 x => states += quoteChar + x.ToString() + quoteChar + commaSeparator
             );
-            states = states.Substring(0, states.Length - 2);
+            if (states.Length >= 3) {
+                states = states.Substring(0, states.Length - 2);
+            }
             Symbols.ForEach(
                 x => symbols += quoteChar + x + quoteChar + commaSeparator
             );
-            symbols = symbols.Substring(0, symbols.Length - 2);
+            if (symbols.Length >= 3) {
+                symbols = symbols.Substring(0, symbols.Length - 2);
+            }
             FinalStates.ForEach(
                 x => finalStates += quoteChar + x.ToString() + quoteChar + commaSeparator
             );
-            finalStates = finalStates.Substring(0, finalStates.Length - 2);
+            if (finalStates.Length >= 3) {
+                finalStates = finalStates.Substring(0, finalStates.Length - 2);
+            }
             Transitions.ForEach(
                 x => transitions += tab + quoteChar + x.ToString() + quoteChar + newLine
             );
@@ -270,6 +276,13 @@ namespace AutomataCLI.Struct {
             this.EnsureContainsState(transition.To);
             if (transition.Input != Automata.SYMBOL_SPONTANEOUS_TRANSITION) {
                 this.EnsureContainsSymbol(transition.Input);
+            } else {
+                this.EnsureAutomataIsOfType(AutomataType.AFNe,
+                    new InvalidValueException(
+                        transition + " (not AFNe)",
+                        typeof(Transition)
+                    )
+                );
             }
 
             Transitions.Add(new Transition(

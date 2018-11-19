@@ -208,5 +208,13 @@ namespace AutomataCLI.Extensions {
             automata.EnsureStateIsValid(stateFrom);
             automata.EnsureStateIsValid(stateTo);
         }
+
+        public static void EnsureAutomataIsOfType(this Automata automata, AutomataType automataType, Exception throwException) {
+            ValidationUtils.EnsureEquals(
+                automataType.ToString(), 
+                automata.GetAutomataType().ToString(), 
+                throwException
+            );
+        }
     }
 }

@@ -120,10 +120,10 @@ namespace AutomataCLI_Tests.StructTests {
                 new Transition(states[3], "@", states[4])
             };
 
+            automata.SetAutomataType(AutomataType.AFNe);
             automata.AddSymbols(symbols);
             automata.AddStates(states);
             automata.AddTransitions(transitions);
-            automata.SetAutomataType(AutomataType.AFNe);
             automata.SetInitialState(states[0]);
 
             String[] validInputs = new String[] {
@@ -201,10 +201,10 @@ namespace AutomataCLI_Tests.StructTests {
                 new Transition(states[2], "b", states[2])
             };
 
+            automata.SetAutomataType(AutomataType.AFNe);
             automata.AddSymbols(symbols);
             automata.AddStates(states);
             automata.AddTransitions(transitions);
-            automata.SetAutomataType(AutomataType.AFNe);
             automata.SetInitialState(states[0]);
 
             String[] validInputs = new String[] {
@@ -314,10 +314,10 @@ namespace AutomataCLI_Tests.StructTests {
                 new Transition(states[18], "@", states[19])
             };
 
+            automata.SetAutomataType(AutomataType.AFNe);
             automata.AddSymbols(symbols);
             automata.AddStates(states);
             automata.AddTransitions(transitions);
-            automata.SetAutomataType(AutomataType.AFNe);
             automata.SetInitialState(states[0]);
 
             String[] validInputs = new String[] {
@@ -427,10 +427,10 @@ namespace AutomataCLI_Tests.StructTests {
                 new Transition(states[18], "@", states[19])
             };
 
+            automata.SetAutomataType(AutomataType.AFNe);
             automata.AddSymbols(symbols);
             automata.AddStates(states);
             automata.AddTransitions(transitions);
-            automata.SetAutomataType(AutomataType.AFNe);
             automata.SetInitialState(states[0]);
 
             String[] validInputs = new String[] {

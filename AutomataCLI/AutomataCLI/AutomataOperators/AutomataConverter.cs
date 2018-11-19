@@ -195,6 +195,7 @@ namespace AutomataCLI.AutomataOperators {
 
         public static Automata DeepCloneAutomata(Automata automata) {
             Automata clonedAutomata = new Automata();
+            clonedAutomata.SetAutomataType(automata.GetAutomataType());
             clonedAutomata.SetSymbols(automata.GetSymbols());
             automata.GetStates().ToList().ForEach(
                 x => clonedAutomata.AddState(DeepCloneState(x))
@@ -203,7 +204,6 @@ namespace AutomataCLI.AutomataOperators {
                 x => clonedAutomata.AddTransition(DeepCloneTransition(clonedAutomata, x))
             );
             clonedAutomata.SetInitialState(clonedAutomata.GetStateLike(automata.GetInitialState()));
-            clonedAutomata.SetAutomataType(automata.GetAutomataType());
             return clonedAutomata;
         }
 
