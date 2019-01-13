@@ -1,1 +1,1 @@
-# automata-reader
+# Loads & Converts DFA, NDFA, NDFAe
